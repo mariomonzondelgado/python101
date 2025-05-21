@@ -3,462 +3,1015 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Explorador Interactivo: Lenguajes de Programación para 2025</title>
+    <title>Ruta de Aprendizaje Interactiva: Fundamentos de Python (Etapa 1)</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Visualization & Content Choices:
-        - Resumen Ejecutivo: Text block. Goal: Inform.
-        - Criterios (Demanda, Facilidad, Versatilidad): Text blocks, bullet points. Goal: Inform.
-            - Demanda del Mercado (Python 45.7%, JS 41.5%, Java 39.5%): Horizontal Bar Chart (Chart.js). Goal: Compare. Interaction: Tooltips. Justification: Clear visual comparison of top 3.
-        - Lenguajes (Python, JS, Java, TS, Kotlin, Swift, Go, Rust): Card-based layout for each. Each card includes: Name, Brief Description, Casos de Uso, Facilidad de Aprendizaje, Demanda, Ventaja Clave. Goal: Inform.
-        - Habilidades Fundamentales (HTML/CSS, SQL): Similar card layout. Goal: Inform.
-        - Guía de Aprendizaje: Text blocks, bullet points. Goal: Inform.
-        - Tabla Comparativa: HTML table styled with Tailwind. Goal: Compare/Organize. Interaction: Hover highlighting. Justification: Direct representation of report's summary table for quick overview.
-        - All textual content directly from the report, summarized/restructured for clarity within the SPA.
-        - Library/Method: Chart.js for the bar chart. Vanilla JS for navigation and simple UI interactions. Tailwind for all styling and layout.
+        - All Sections (Introducción, Módulos 1-6, Proyectos, Conclusión, Recursos, IDEs): Primarily textual content, code examples, lists of exercises, and tips.
+        - Goal: Inform, Educate, Guide.
+        - Presentation Method: Structured HTML with Tailwind CSS for layout and styling. Code examples within `<pre><code>` tags with a copy-to-clipboard button. Exercises and tips presented as clearly formatted lists or paragraphs.
+        - Interaction: Navigation between sections. Copy-to-clipboard for code.
+        - Justification: The source material is a textual learning guide. The SPA aims to make this guide more accessible and navigable online. No complex data visualizations are present in the source.
+        - Library/Method: Vanilla JS for navigation and copy-to-clipboard functionality. Tailwind for all styling.
         -->
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
+        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+        .nav-link { transition: background-color 0.2s, color 0.2s; }
+        .nav-link.active { background-color: #0284c7; color: white; } /* sky-600 */
+        .nav-link:not(.active):hover { background-color: #e0f2fe; } /* sky-100 */
+        .content-section { display: none; animation: fadeIn 0.5s ease-in-out; }
+        .content-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .code-block { background-color: #1f2937; color: #d1d5db; padding: 1rem; border-radius: 0.5rem; overflow-x: auto; position: relative; margin-bottom: 1rem; }
+        .code-block pre { margin: 0; white-space: pre-wrap; word-wrap: break-word; }
+        .copy-btn { position: absolute; top: 0.5rem; right: 0.5rem; background-color: #374151; color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 0.25rem; cursor: pointer; font-size: 0.75rem; }
+        .copy-btn:hover { background-color: #4b5563; }
+        .tooltip { position: fixed; background-color: #10B981; color: white; padding: 5px 10px; border-radius: 4px; font-size: 0.875rem; z-index: 100; display: none; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        
+        .sidebar {
+            transition: transform 0.3s ease-in-out;
+            width: 288px; /* md:w-72 */
         }
-        .chart-container {
-            position: relative;
-            width: 100%;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-            height: 300px;
-            max-height: 350px;
-        }
-        @media (min-width: 768px) {
-            .chart-container {
-                height: 350px;
-                max-height: 400px;
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                position: fixed;
+                height: 100vh;
+                z-index: 40; /* Ensure sidebar is above content but below modal/tooltip */
             }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0 !important; /* Override md:ml-72 */
+                padding-top: 4rem; /* Space for fixed mobile header */
+            }
+            .nav-toggle-btn { display: block; }
+             .header-mobile { display: flex; }
         }
-        .nav-button {
-            transition: background-color 0.3s, color 0.3s;
+        @media (min-width: 769px) {
+            .nav-toggle-btn { display: none; }
+            .header-mobile { display: none; }
+            .main-content { margin-left: 288px; } /* md:ml-72 */
         }
-        .nav-button.active {
-            background-color: #0284c7; /* sky-600 */
-            color: white;
+        .submenu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
         }
-        .nav-button:not(.active):hover {
-            background-color: #e0f2fe; /* sky-100 */
+        .submenu.open {
+            max-height: 500px; /* Adjust as needed */
         }
-        .content-section {
-            display: none;
-        }
-        .content-section.active {
-            display: block;
-        }
-        .language-card {
-            background-color: white;
-            border-radius: 0.5rem;
-            padding: 1.5rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            margin-bottom: 1.5rem;
-        }
-        .language-card h3 {
-            color: #0369a1; /* sky-700 */
-        }
-        .table-responsive {
-            overflow-x: auto;
-        }
-        table th, table td {
-            padding: 0.75rem;
-            text-align: left;
-            border-bottom: 1px solid #e5e7eb; /* gray-200 */
-        }
-        table th {
-            background-color: #f3f4f6; /* gray-100 */
-            font-weight: 600;
-        }
-        table tbody tr:hover {
-            background-color: #f9fafb; /* gray-50 */
-        }
+        h1, h2, h3 { margin-bottom: 0.75rem; color: #0369a1; /* sky-700 */}
+        h1 { font-size: 2.25rem; line-height: 2.5rem; } /* text-4xl */
+        h2 { font-size: 1.875rem; line-height: 2.25rem; } /* text-3xl */
+        h3 { font-size: 1.5rem; line-height: 2rem; } /* text-2xl */
+        h4 { font-size: 1.25rem; line-height: 1.75rem; color: #075985; margin-bottom: 0.5rem;} /* text-xl sky-800 */
+        p, li { margin-bottom: 0.5rem; line-height: 1.6; }
+        ul, ol { padding-left: 1.5rem; }
     </style>
 </head>
 <body class="bg-stone-100 text-stone-800">
 
-    <header class="bg-stone-800 text-white py-6 shadow-lg">
-        <div class="container mx-auto px-4 text-center">
-            <h1 class="text-3xl md:text-4xl font-bold">Lenguajes de Programación para 2025</h1>
-            <p class="mt-2 text-stone-300">Una guía interactiva para elegir tu próximo lenguaje.</p>
+    <div class="flex flex-col md:flex-row min-h-screen">
+        <div class="header-mobile md:hidden fixed top-0 left-0 right-0 bg-stone-800 text-white p-4 flex items-center justify-between shadow-lg z-50">
+            <span class="text-lg font-semibold">Ruta Python</span>
+            <button id="navToggle" class="nav-toggle-btn p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                </svg>
+            </button>
         </div>
-    </header>
 
-    <nav class="bg-white shadow-md sticky top-0 z-50">
-        <div class="container mx-auto px-2 sm:px-4 py-2">
-            <ul class="flex flex-wrap justify-center space-x-1 sm:space-x-2">
-                <li><button data-target="inicio" class="nav-button active text-sm sm:text-base font-medium py-2 px-2 sm:px-4 rounded-md">Inicio</button></li>
-                <li><button data-target="criterios" class="nav-button text-sm sm:text-base font-medium py-2 px-2 sm:px-4 rounded-md">Criterios</button></li>
-                <li><button data-target="destacados" class="nav-button text-sm sm:text-base font-medium py-2 px-2 sm:px-4 rounded-md">Destacados</button></li>
-                <li><button data-target="especializados" class="nav-button text-sm sm:text-base font-medium py-2 px-2 sm:px-4 rounded-md">Especializados</button></li>
-                <li><button data-target="fundamentales" class="nav-button text-sm sm:text-base font-medium py-2 px-2 sm:px-4 rounded-md">Fundamentos</button></li>
-                <li><button data-target="aprendizaje" class="nav-button text-sm sm:text-base font-medium py-2 px-2 sm:px-4 rounded-md">Aprendizaje</button></li>
-                <li><button data-target="tabla" class="nav-button text-sm sm:text-base font-medium py-2 px-2 sm:px-4 rounded-md">Tabla Comparativa</button></li>
-            </ul>
-        </div>
-    </nav>
+        <aside id="sidebar" class="sidebar w-full md:w-72 bg-stone-50 text-stone-700 p-4 space-y-1 shadow-lg fixed md:relative inset-y-0 left-0 transform md:transform-none -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out z-40 overflow-y-auto pt-16 md:pt-4">
+            <h2 class="text-2xl font-bold text-sky-700 mb-4 hidden md:block">Ruta de Aprendizaje</h2>
+            <nav>
+                <ul class="space-y-1">
+                    <li><a href="#" class="nav-link block py-2.5 px-4 rounded-md font-medium hover:bg-sky-100" data-target="introduccion">Introducción</a></li>
+                    <li>
+                        <button class="collapsible nav-link w-full text-left block py-2.5 px-4 rounded-md font-medium hover:bg-sky-100 flex justify-between items-center">
+                            <span>Módulo 1: Sintaxis</span> <span class="arrow text-xs">▶</span>
+                        </button>
+                        <ul class="submenu ml-4">
+                            <li><a href="#" class="nav-link block py-1.5 px-3 rounded-md text-sm hover:bg-sky-50" data-target="modulo1_1">1.1 Variables y Tipos</a></li>
+                            <li><a href="#" class="nav-link block py-1.5 px-3 rounded-md text-sm hover:bg-sky-50" data-target="modulo1_2">1.2 Operadores</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <button class="collapsible nav-link w-full text-left block py-2.5 px-4 rounded-md font-medium hover:bg-sky-100 flex justify-between items-center">
+                            <span>Módulo 2: Control Flujo</span> <span class="arrow text-xs">▶</span>
+                        </button>
+                        <ul class="submenu ml-4">
+                            <li><a href="#" class="nav-link block py-1.5 px-3 rounded-md text-sm hover:bg-sky-50" data-target="modulo2_1">2.1 if/elif/else</a></li>
+                            <li><a href="#" class="nav-link block py-1.5 px-3 rounded-md text-sm hover:bg-sky-50" data-target="modulo2_2">2.2 for loops</a></li>
+                            <li><a href="#" class="nav-link block py-1.5 px-3 rounded-md text-sm hover:bg-sky-50" data-target="modulo2_3">2.3 while loops</a></li>
+                        </ul>
+                    </li>
+                     <li>
+                        <button class="collapsible nav-link w-full text-left block py-2.5 px-4 rounded-md font-medium hover:bg-sky-100 flex justify-between items-center">
+                           <span>Módulo 3: Estructuras Datos</span> <span class="arrow text-xs">▶</span>
+                        </button>
+                        <ul class="submenu ml-4">
+                            <li><a href="#" class="nav-link block py-1.5 px-3 rounded-md text-sm hover:bg-sky-50" data-target="modulo3_1">3.1 Listas</a></li>
+                            <li><a href="#" class="nav-link block py-1.5 px-3 rounded-md text-sm hover:bg-sky-50" data-target="modulo3_2">3.2 Tuplas</a></li>
+                            <li><a href="#" class="nav-link block py-1.5 px-3 rounded-md text-sm hover:bg-sky-50" data-target="modulo3_3">3.3 Diccionarios</a></li>
+                            <li><a href="#" class="nav-link block py-1.5 px-3 rounded-md text-sm hover:bg-sky-50" data-target="modulo3_4">3.4 Conjuntos</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#" class="nav-link block py-2.5 px-4 rounded-md font-medium hover:bg-sky-100" data-target="modulo4">Módulo 4: Funciones</a></li>
+                    <li><a href="#" class="nav-link block py-2.5 px-4 rounded-md font-medium hover:bg-sky-100" data-target="modulo5">Módulo 5: Manejo Errores</a></li>
+                    <li><a href="#" class="nav-link block py-2.5 px-4 rounded-md font-medium hover:bg-sky-100" data-target="modulo6">Módulo 6: E/S Archivos</a></li>
+                    <li><a href="#" class="nav-link block py-2.5 px-4 rounded-md font-medium hover:bg-sky-100" data-target="proyectos">Proyectos Prácticos</a></li>
+                    <li><a href="#" class="nav-link block py-2.5 px-4 rounded-md font-medium hover:bg-sky-100" data-target="conclusion">Conclusión Etapa 1</a></li>
+                    <li><a href="#" class="nav-link block py-2.5 px-4 rounded-md font-medium hover:bg-sky-100" data-target="recursos">Recursos Recomendados</a></li>
+                    <li><a href="#" class="nav-link block py-2.5 px-4 rounded-md font-medium hover:bg-sky-100" data-target="ides">Sobre el Mejor IDE</a></li>
+                </ul>
+            </nav>
+        </aside>
 
-    <main class="container mx-auto p-4 md:p-8">
-        <section id="inicio" class="content-section active">
-            <h2 class="text-2xl font-semibold mb-4 text-sky-700">Resumen Ejecutivo: Su Puerta de Entrada a la Programación en 2025</h2>
-            <div class="bg-white p-6 rounded-lg shadow space-y-4">
-                <p>Esta sección proporciona una visión general de las recomendaciones del informe. La industria tecnológica evoluciona rápidamente, impulsada por la IA, la nube y el IoT. Aprender programación en 2025 es una excelente oportunidad, con una alta demanda de desarrolladores.</p>
-                <p><strong>Python</strong> y <strong>JavaScript</strong> son los puntos de partida más recomendados universalmente por su versatilidad y robustos ecosistemas. Para intereses específicos, <strong>Kotlin</strong> (Android), <strong>Swift</strong> (iOS), <strong>Go</strong> (nube/sistemas) y <strong>TypeScript</strong> (web a gran escala) son opciones atractivas.</p>
-                <p>La elección "más interesante" depende de alinear intereses personales y profesionales con la demanda del mercado y la facilidad de aprendizaje.</p>
-            </div>
-        </section>
+        <main id="mainContent" class="main-content flex-1 p-6 md:p-10 bg-stone-100">
+            <div id="copyTooltip" class="tooltip">¡Copiado!</div>
 
-        <section id="criterios" class="content-section">
-            <h2 class="text-2xl font-semibold mb-4 text-sky-700">Entendiendo el "Porqué": Criterios para Elegir su Primer Lenguaje</h2>
-            <div class="bg-white p-6 rounded-lg shadow space-y-6">
-                <p>Aquí exploramos los factores cruciales al elegir un lenguaje de programación en 2025. Comprender estos criterios te ayudará a tomar una decisión informada que se alinee con tus objetivos y el panorama tecnológico actual.</p>
-                
-                <div>
-                    <h3 class="text-xl font-semibold mb-2 text-sky-600">A. Demanda del Mercado Laboral y Potencial de Crecimiento</h3>
-                    <p>Python, JavaScript y Java lideran la demanda. Python es el más buscado (45.7%), seguido de JavaScript (41.5%) y Java (39.5%). El crecimiento de la IA impulsa a Python. JavaScript es clave por las SPAs y su ecosistema full-stack.</p>
-                    <p class="mt-2">La demanda se extiende a los ecosistemas (frameworks como React para JS, Django para Python). Lenguajes emergentes como Rust, Go y TypeScript también ganan tracción.</p>
-                    <div class="mt-4 chart-container">
-                        <canvas id="demandaMercadoChart"></canvas>
+            <section id="introduccion" class="content-section space-y-6">
+                <h1>Ruta de Aprendizaje Detallada: Fundamentos de Python (Etapa 1)</h1>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <p class="text-lg">¡Bienvenido/a a la Etapa 1 de tu viaje para aprender Python! Esta aplicación interactiva te guiará a través de los conceptos esenciales del lenguaje, basándose en la "Ruta de Aprendizaje Detallada: Fundamentos de Python (Etapa 1)".</p>
+                    <p>La clave para aprender a programar es la práctica constante. Te animamos a explorar cada módulo, realizar los ejercicios y experimentar con los ejemplos de código. Utiliza la navegación para moverte por los diferentes temas.</p>
+                    <p class="mt-4 font-semibold">¡No temas experimentar con el código y diviértete aprendiendo!</p>
+                </div>
+            </section>
+
+            <section id="modulo1_1" class="content-section space-y-6">
+                <h2>Módulo 1.1: Variables y Tipos de Datos</h2>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h4>Explicación</h4>
+                    <p>Una <strong>variable</strong> es como una caja con una etiqueta donde puedes guardar información (valores). En Python, no necesitas declarar el tipo de dato de una variable antes de usarla (esto se llama <strong>tipado dinámico</strong>). Python lo infiere automáticamente. Los <strong>tipos de datos</strong> básicos son:</p>
+                    <ul class="list-disc">
+                        <li><code>int</code>: Números enteros (ej: <code>10</code>, <code>-3</code>, <code>0</code>).</li>
+                        <li><code>float</code>: Números con decimales (ej: <code>3.14</code>, <code>-0.5</code>, <code>2.0</code>).</li>
+                        <li><code>str</code>: Cadenas de texto (ej: <code>"Hola"</code>, <code>'Python123'</code>).</li>
+                        <li><code>bool</code>: Valores booleanos, que solo pueden ser <code>True</code> (verdadero) o <code>False</code> (falso).</li>
+                    </ul>
+                    <h4>Ejemplos de Código</h4>
+                    <div class="code-block">
+                        <button class="copy-btn" title="Copiar código">Copiar</button>
+                        <pre><code class="language-python"># Variables y asignación
+nombre_del_curso = "Python Fundamentos"  # str
+numero_estudiantes = 25                 # int
+precio_curso = 49.99                    # float
+es_online = True                        # bool
+
+# Imprimir variables
+print(nombre_del_curso)
+print(numero_estudiantes)
+print(precio_curso)
+print(es_online)
+
+# Puedes ver el tipo de una variable con type()
+print(type(nombre_del_curso)) # Salida: &lt;class 'str'&gt;</code></pre>
                     </div>
-                     <p class="text-sm text-center mt-2 text-stone-600">Porcentaje de reclutadores buscando habilidades en el lenguaje.</p>
+                    <h4>Ejercicios para Practicar</h4>
+                    <ol class="list-decimal">
+                        <li>Crea variables para almacenar tu nombre, tu edad, tu altura en metros (ej: 1.75) y si te gusta el café (True/False). Luego, imprime el valor de cada variable.</li>
+                        <li>Pide al usuario que ingrese su ciudad natal usando la función <code>input()</code>, almacena la respuesta en una variable e imprímela.</li>
+                        <li>Declara dos variables numéricas, <code>a = 10</code> y <code>b = 3</code>. Calcula e imprime su suma, resta, multiplicación y división.</li>
+                    </ol>
+                    <h4>Ejercicios de Lógica de Programación</h4>
+                     <ol class="list-decimal">
+                        <li>Piensa cómo representarías la información de un libro: título, autor, número de páginas, y si está disponible en formato digital. ¿Qué tipos de datos usarías para cada pieza de información?</li>
+                        <li>Si tienes el precio de un producto y la cantidad que un cliente quiere comprar, ¿cómo calcularías el costo total? ¿Qué variables necesitarías?</li>
+                    </ol>
+                    <h4>Trucos y Consejos</h4>
+                    <ul class="list-disc">
+                        <li>Usa nombres de variables descriptivos y en minúsculas, separando palabras con guiones bajos (ej: <code>mi_variable_descriptiva</code>). Esto se llama "snake_case".</li>
+                        <li>Los comentarios en Python empiezan con <code>#</code>. Úsalos para explicar tu código: <code># Esto es un comentario</code>.</li>
+                        <li>Puedes convertir entre algunos tipos de datos, ej: <code>int("10")</code> convierte la cadena "10" a un entero. <code>str(25)</code> convierte el entero 25 a una cadena.</li>
+                    </ul>
                 </div>
+            </section>
 
-                <div>
-                    <h3 class="text-xl font-semibold mb-2 text-sky-600">B. Facilidad de Aprendizaje y Amigabilidad para Principiantes</h3>
-                    <p>La sintaxis simple es clave. Python, JavaScript, Ruby y HTML/CSS son fáciles por su sintaxis similar al inglés y amplios recursos. Python destaca por su legibilidad. JavaScript permite ver resultados en navegadores rápidamente.</p>
-                    <p class="mt-2">La facilidad puede ser subjetiva (Java es más fácil con experiencia en POO). Los lenguajes fáciles fomentan grandes comunidades y recursos, creando un ciclo positivo de aprendizaje.</p>
-                </div>
+            <section id="modulo1_2" class="content-section space-y-6">
+                <h2>Módulo 1.2: Operadores</h2>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h4>Explicación</h4>
+                    <p>Los operadores son símbolos que realizan operaciones sobre variables y valores.</p>
+                    <ul class="list-disc">
+                        <li><strong>Aritméticos:</strong> <code>+</code> (suma), <code>-</code> (resta), <code>*</code> (multiplicación), <code>/</code> (división), <code>//</code> (división entera), <code>%</code> (módulo), <code>**</code> (exponenciación).</li>
+                        <li><strong>De Asignación:</strong> <code>=</code>, <code>+=</code>, <code>-=</code>, <code>*=</code>, <code>/=</code>.</li>
+                        <li><strong>De Comparación:</strong> <code>==</code>, <code>!=</code>, <code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>, <code>&gt;=</code>. Devuelven <code>True</code> o <code>False</code>.</li>
+                        <li><strong>Lógicos:</strong> <code>and</code>, <code>or</code>, <code>not</code>. Se usan con valores booleanos.</li>
+                    </ul>
+                    <h4>Ejemplos de Código</h4>
+                    <div class="code-block">
+                        <button class="copy-btn" title="Copiar código">Copiar</button>
+                        <pre><code class="language-python"># Operadores Aritméticos
+a = 15
+b = 4
+print(f"Suma: {a + b}")           # 19
+print(f"División entera: {a // b}") # 3
+print(f"Módulo: {a % b}")         # 3
+print(f"Potencia: {2 ** 3}")      # 8 (2 elevado a 3)
 
-                <div>
-                    <h3 class="text-xl font-semibold mb-2 text-sky-600">C. Versatilidad y Dominios de Aplicación</h3>
-                    <p>Python y JavaScript son muy versátiles (web, ciencia de datos, IA, automatización). Otros son más especializados: Swift/Kotlin (móvil), Rust/Go (sistemas/nube), C++/C# (juegos/empresarial).</p>
-                    <p class="mt-2">Elegir lenguajes alineados con IA, Blockchain y Nube (Python, Go, Rust) es estratégico. Un lenguaje versátil permite explorar diferentes áreas antes de especializarse.</p>
-                </div>
-            </div>
-        </section>
+# Operadores de Asignación
+contador = 0
+contador += 5  # contador ahora es 5
+print(f"Contador: {contador}")
 
-        <section id="destacados" class="content-section">
-            <h2 class="text-2xl font-semibold mb-4 text-sky-700">Los Principales Contendientes para 2025: Análisis en Profundidad</h2>
-            <div class="space-y-6">
-                 <p class="bg-sky-50 p-4 rounded-lg text-sky-800">Esta sección detalla los lenguajes más establecidos y demandados, explorando sus fortalezas, casos de uso principales y por qué son excelentes opciones para principiantes y desarrolladores experimentados en 2025. Cada uno ofrece un camino robusto hacia diferentes áreas de la tecnología.</p>
+# Operadores de Comparación
+edad_juan = 20
+edad_minima = 18
+es_mayor = edad_juan >= edad_minima
+print(f"¿Juan es mayor de edad? {es_mayor}") # True
 
-                <div class="language-card">
-                    <h3 class="text-xl font-semibold mb-2">Python: El Campeón Universal</h3>
-                    <p class="text-sm text-stone-600 mb-2">Popular y demandado, de propósito general, código abierto, simple y legible.</p>
-                    <p><strong>Casos de Uso Clave:</strong> IA/ML/Ciencia de Datos (TensorFlow, PyTorch), Desarrollo Web (Django, Flask), Automatización, IoT, Ciberseguridad, Finanzas.</p>
-                    <p><strong>Facilidad de Aprendizaje:</strong> Muy Fácil (20/100). Sintaxis simple, extensas bibliotecas.</p>
-                    <p><strong>Comunidad y Recursos:</strong> Vasta y activa, cursos en Mimo, Codecademy, Coursera, YouTube.</p>
-                    <p><strong>Ventaja Clave:</strong> Versatilidad, acceso rápido a IA de vanguardia.</p>
+# Operadores Lógicos
+tiene_entrada = True
+es_vip = False
+puede_pasar = tiene_entrada and not es_vip
+print(f"¿Puede pasar? {puede_pasar}")</code></pre>
+                    </div>
+                    <h4>Ejercicios para Practicar</h4>
+                    <ol class="list-decimal">
+                        <li>Pide al usuario dos números. Muestra la suma, resta, producto, división, división entera y el módulo de ambos.</li>
+                        <li>Pide al usuario su año de nacimiento. Calcula su edad aproximada e imprímela.</li>
+                        <li>Declara una variable <code>temperatura = 25</code>. Escribe expresiones que evalúen a <code>True</code> o <code>False</code> para:
+                            <ul class="list-disc list-inside ml-6">
+                                <li>¿La temperatura es mayor a 30?</li>
+                                <li>¿La temperatura es menor o igual a 25?</li>
+                                <li>¿La temperatura no es igual a 20?</li>
+                            </ul>
+                        </li>
+                    </ol>
+                    <h4>Ejercicios de Lógica de Programación</h4>
+                    <ol class="list-decimal">
+                        <li>Para que un usuario pueda acceder a una sección especial de una web, necesita ser mayor de edad (&gt;= 18) Y tener una suscripción activa (una variable booleana). Escribe la lógica (la expresión booleana) que determine si puede acceder.</li>
+                        <li>Un producto tiene un descuento del 10% si el precio original es mayor a 50€. ¿Cómo expresarías la condición para aplicar el descuento?</li>
+                    </ol>
+                    <h4>Trucos y Consejos</h4>
+                    <ul class="list-disc">
+                        <li>Usa paréntesis <code>()</code> para agrupar operaciones y controlar el orden de evaluación si tienes dudas sobre la precedencia de operadores.</li>
+                        <li>Las f-strings (como <code>f"Hola, {nombre}"</code>) son una forma muy cómoda de incluir variables dentro de cadenas de texto.</li>
+                    </ul>
                 </div>
-                <div class="language-card">
-                    <h3 class="text-xl font-semibold mb-2">JavaScript: El Motor Inigualable de la Web</h3>
-                    <p class="text-sm text-stone-600 mb-2">Rey del desarrollo web (frontend y backend con Node.js).</p>
-                    <p><strong>Casos de Uso Clave:</strong> Sitios web interactivos, aplicaciones full-stack (React, Angular, Node.js), móvil (React Native), escritorio (Electron), IoT, serverless.</p>
-                    <p><strong>Facilidad de Aprendizaje:</strong> Fácil (40/100). Amigable para principiantes, resultados en tiempo real en navegador.</p>
-                    <p><strong>Comunidad y Recursos:</strong> Masiva y activa, recursos de Mozilla, Codecademy, Coursera, Udemy, freeCodeCamp.</p>
-                    <p><strong>Ventaja Clave:</strong> Resultados visuales inmediatos, full-stack con un solo lenguaje.</p>
-                </div>
-                <div class="language-card">
-                    <h3 class="text-xl font-semibold mb-2">Java: El Caballo de Batalla Empresarial</h3>
-                    <p class="text-sm text-stone-600 mb-2">Veterano sólido, dominante en grandes empresas por estabilidad y escalabilidad (WORA).</p>
-                    <p><strong>Casos de Uso Clave:</strong> Sistemas empresariales robustos, aplicaciones Android, soluciones en la nube (Spring Boot), Big Data (Hadoop, Spark).</p>
-                    <p><strong>Facilidad de Aprendizaje:</strong> Moderada (70/100). Manejable, especialmente con experiencia en POO.</p>
-                    <p><strong>Comunidad y Recursos:</strong> Vasta y activa, cursos en GeeksforGeeks, Udemy, Coursera.</p>
-                    <p><strong>Ventaja Clave:</strong> Robustez, estructura, estabilidad en grandes proyectos.</p>
-                </div>
-            </div>
-        </section>
+            </section>
 
-        <section id="especializados" class="content-section">
-            <h2 class="text-2xl font-semibold mb-4 text-sky-700">Lenguajes Emergentes y Especializados: Alto Impacto, Caminos Específicos</h2>
-            <div class="space-y-6">
-                <p class="bg-sky-50 p-4 rounded-lg text-sky-800">Más allá de los gigantes, existen lenguajes que están ganando una tracción significativa en nichos específicos o que ofrecen ventajas únicas para ciertos tipos de desarrollo. Esta sección explora esas opciones de alto impacto, ideales si tienes un interés particular o buscas habilidades diferenciadoras.</p>
+            <section id="modulo2_1" class="content-section space-y-6">
+                <h2>Módulo 2.1: `if / elif / else` (Condicionales)</h2>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h4>Explicación</h4>
+                    <p>Permiten ejecutar diferentes bloques de código según si una condición es verdadera o falsa.</p>
+                    <ul class="list-disc">
+                        <li><code>if</code>: Ejecuta el bloque si la condición es <code>True</code>.</li>
+                        <li><code>elif</code> (else if): Se evalúa si el <code>if</code> anterior (o <code>elif</code> anterior) fue <code>False</code>. Puedes tener varios <code>elif</code>.</li>
+                        <li><code>else</code>: Ejecuta el bloque si todas las condiciones anteriores (<code>if</code> y <code>elif</code>) fueron <code>False</code>. Es opcional.</li>
+                    </ul>
+                    <h4>Ejemplos de Código</h4>
+                    <div class="code-block">
+                        <button class="copy-btn" title="Copiar código">Copiar</button>
+                        <pre><code class="language-python">nota = float(input("Ingresa tu nota (0-10): "))
 
-                <div class="language-card">
-                    <h3 class="text-xl font-semibold mb-2">TypeScript: El Primo Supercargado de JavaScript</h3>
-                    <p class="text-sm text-stone-600 mb-2">Añade tipado opcional a JS, código más limpio y manejable.</p>
-                    <p><strong>Casos de Uso:</strong> Aplicaciones web complejas, frameworks frontend (Angular), desarrollo full-stack a gran escala, desarrollo server-side con Node.js.</p>
-                    <p><strong>Demanda y Aprendizaje:</strong> Alta demanda. Curva de aprendizaje suave para usuarios de JS (Moderada, 40/100 si no).</p>
-                    <p><strong>Ventaja Clave:</strong> Mejora la calidad y mantenibilidad del código, preparación para desarrollo profesional.</p>
-                </div>
-                <div class="language-card">
-                    <h3 class="text-xl font-semibold mb-2">Kotlin y Swift: Maestros Móviles</h3>
-                    <p class="text-sm text-stone-600 mb-2">Kotlin (Android, conciso, interoperable con Java). Swift (iOS/macOS, sintaxis limpia, moderno).</p>
-                    <p><strong>Casos de Uso:</strong> Kotlin para apps Android modernas (Netflix, Pinterest). Swift para apps nativas Apple (SoundCloud).</p>
-                    <p><strong>Demanda y Aprendizaje:</strong> Alta demanda en sus ecosistemas. Swift (Moderada, 50/100) es más suave. Kotlin (Moderada, 65/100) ofrece productividad.</p>
-                    <p><strong>Ventaja Clave:</strong> Desarrollo móvil directo, conexión tangible con usuarios finales.</p>
-                </div>
-                <div class="language-card">
-                    <h3 class="text-xl font-semibold mb-2">Go (Golang) y Rust: Potencias de Rendimiento y Sistemas</h3>
-                    <p class="text-sm text-stone-600 mb-2">Go (eficiencia, escalabilidad). Rust (seguridad de memoria, rendimiento).</p>
-                    <p><strong>Casos de Uso:</strong> Go para nube, microservicios, DevOps (Docker, Kubernetes). Rust para programación de sistemas, backend, motores de juegos, blockchain.</p>
-                    <p><strong>Demanda y Aprendizaje:</strong> Demanda alta y creciente. Go (Moderada, 60/100) es relativamente fácil. Rust (Difícil, 80/100) tiene curva pronunciada pero es muy apreciado.</p>
-                    <p><strong>Ventaja Clave:</strong> Go para eficiencia y escalabilidad. Rust para seguridad de memoria y alto rendimiento, roles de alto valor.</p>
-                </div>
-            </div>
-        </section>
+if nota >= 9:
+    print("Sobresaliente")
+elif nota >= 7:
+    print("Notable")
+elif nota >= 5:
+    print("Aprobado")
+else:
+    print("Suspenso")
 
-        <section id="fundamentales" class="content-section">
-            <h2 class="text-2xl font-semibold mb-4 text-sky-700">La Importancia de las Habilidades Fundamentales</h2>
-            <div class="space-y-6">
-                <p class="bg-sky-50 p-4 rounded-lg text-sky-800">Antes de sumergirse de lleno en lenguajes de programación complejos, es crucial dominar ciertas habilidades fundamentales que son la base de gran parte del desarrollo tecnológico. Esta sección destaca dos pilares esenciales: HTML/CSS para la web y SQL para la gestión de datos.</p>
-                <div class="language-card">
-                    <h3 class="text-xl font-semibold mb-2">HTML/CSS: La Base de la Web</h3>
-                    <p class="text-sm text-stone-600 mb-2">Lenguajes de marcado fundamentales para estructura (HTML) y estilo (CSS) de páginas web.</p>
-                    <p><strong>Aplicación:</strong> Indispensables para cualquier tipo de desarrollo web, desde sitios simples hasta aplicaciones complejas.</p>
-                    <p><strong>Facilidad de Aprendizaje:</strong> Muy Fácil (10/100). Proporcionan retroalimentación visual inmediata, lo que los hace ideales para empezar.</p>
-                    <p><strong>Importancia:</strong> Son el primer paso en la codificación para muchos y una habilidad universalmente requerida en la industria web.</p>
-                    <p><strong>Ventaja Clave:</strong> Fundamentales, resultados visuales inmediatos, base para aprender JavaScript y frameworks frontend.</p>
+# Ejemplo simple
+numero = -5
+if numero > 0:
+    print("El número es positivo.")
+else:
+    print("El número es cero o negativo.")</code></pre>
+                    </div>
+                    <h4>Ejercicios para Practicar</h4>
+                    <ol class="list-decimal">
+                        <li>Pide al usuario un número. Indica si el número es par o impar. (Pista: usa el operador módulo <code>%</code>).</li>
+                        <li>Pide al usuario su edad. Si es menor de 13 años, muestra "Eres un niño". Si tiene entre 13 y 17 (inclusive), muestra "Eres un adolescente". Si tiene 18 o más, muestra "Eres un adulto".</li>
+                        <li>Pide dos números al usuario. Indica cuál es el mayor o si son iguales.</li>
+                    </ol>
+                    <h4>Ejercicios de Lógica de Programación</h4>
+                    <ol class="list-decimal">
+                        <li>Un semáforo tiene tres colores: "rojo", "amarillo", "verde". Diseña la lógica <code>if/elif/else</code> que indique la acción a tomar para cada color (ej: "rojo" -&gt; "Detenerse").</li>
+                        <li>Para obtener un descuento en una tienda, un cliente debe ser miembro Y su compra debe superar los 100€, O BIEN, si no es miembro, su compra debe superar los 200€. ¿Cómo estructurarías esta lógica condicional?</li>
+                    </ol>
+                    <h4>Trucos y Consejos</h4>
+                    <ul class="list-disc">
+                        <li>¡La <strong>indentación</strong> (los espacios al inicio de la línea) es CRUCIAL en Python! Define qué código pertenece a cada bloque (<code>if</code>, <code>elif</code>, <code>else</code>). Usa 4 espacios por nivel de indentación.</li>
+                        <li>Puedes anidar condicionales (un <code>if</code> dentro de otro <code>if</code>), pero intenta no hacerlo demasiado complejo.</li>
+                    </ul>
                 </div>
-                <div class="language-card">
-                    <h3 class="text-xl font-semibold mb-2">SQL: El Lenguaje de las Bases de Datos</h3>
-                    <p class="text-sm text-stone-600 mb-2">Esencial para interactuar con bases de datos relacionales.</p>
-                    <p><strong>Aplicación:</strong> Crítico para roles de backend, ciencia de datos, análisis de datos y cualquier aplicación que maneje datos persistentes.</p>
-                    <p><strong>Facilidad de Aprendizaje:</strong> Muy Fácil. Su sintaxis declarativa lo hace relativamente sencillo de aprender para la gestión de datos.</p>
-                    <p><strong>Importancia:</strong> Habilidad transversal, necesaria en casi cualquier sector tecnológico que trabaje con grandes volúmenes de información.</p>
-                    <p><strong>Ventaja Clave:</strong> Comunicación con datos, habilidad universalmente demandada, base para análisis y gestión de información.</p>
-                </div>
-            </div>
-        </section>
+            </section>
 
-        <section id="aprendizaje" class="content-section">
-            <h2 class="text-2xl font-semibold mb-4 text-sky-700">Diseñando su Ruta de Aprendizaje: Consejos Estratégicos</h2>
-             <div class="bg-white p-6 rounded-lg shadow space-y-6">
-                <p>Aprender a programar es un viaje. Esta sección ofrece orientación práctica sobre cómo abordar el aprendizaje de manera efectiva, independientemente del lenguaje que elijas. Estos consejos te ayudarán a construir una base sólida y a mantenerte motivado.</p>
-                
-                <div>
-                    <h3 class="text-xl font-semibold mb-2 text-sky-600">A. Proyectos Prácticos y Aplicación Real</h3>
-                    <p>La forma más efectiva de aprender es codificando y construyendo proyectos. Recursos como Codecademy, Mimo y Leetcode enfatizan ejercicios interactivos y proyectos del mundo real. Los proyectos completados son prueba tangible de habilidades para empleadores. Encontrar y corregir errores es crucial para desarrollar habilidades de resolución de problemas.</p>
-                    <p class="mt-2">Este enfoque práctico acelera la adquisición de habilidades y genera confianza.</p>
-                </div>
+            <section id="modulo2_2" class="content-section space-y-6">
+                <h2>Módulo 2.2: `for` loops (Bucles Iterativos)</h2>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h4>Explicación</h4>
+                    <p>Un bucle <code>for</code> se utiliza para iterar (repetir un bloque de código) sobre los elementos de una secuencia (como una lista, una tupla, una cadena de texto) o sobre un rango de números.</p>
+                    <h4>Ejemplos de Código</h4>
+                    <div class="code-block">
+                        <button class="copy-btn" title="Copiar código">Copiar</button>
+                        <pre><code class="language-python"># Iterar sobre una lista
+frutas = ["manzana", "banana", "cereza"]
+for fruta in frutas:
+    print(f"Me gusta la {fruta}")
 
-                <div>
-                    <h3 class="text-xl font-semibold mb-2 text-sky-600">B. Aprovechando la Comunidad y los Recursos en Línea</h3>
-                    <p>Existe una inmensa cantidad de cursos (gratuitos y de pago), tutoriales, documentación y plataformas interactivas para lenguajes populares. Comunidades activas (Stack Overflow, GitHub, Reddit, Discord) brindan apoyo invaluable. Herramientas de IA como ChatGPT, Claude.AI y Perplexity se están convirtiendo en ayudas de aprendizaje interactivas.</p>
-                    <p class="mt-2">Esta abundancia de apoyo reduce la barrera de entrada y permite tomar las riendas del aprendizaje.</p>
-                </div>
-                 <div>
-                    <h3 class="text-xl font-semibold mb-2 text-sky-600">C. Mentalidad de Aprendizaje Continuo</h3>
-                    <p>El panorama tecnológico está en constante evolución. Dominar un solo lenguaje es menos importante que desarrollar una mentalidad de aprendizaje continuo y adaptabilidad. Las habilidades adquiridas al aprender un lenguaje a menudo son transferibles a otros, por lo que la inversión inicial sirve como trampolín.</p>
-                    <p class="mt-2">La elección inicial es importante, pero no definitiva. Fomenta una mentalidad de exploración y crecimiento.</p>
-                </div>
-            </div>
-        </section>
+# Iterar sobre una cadena de texto
+palabra = "Python"
+for letra in palabra:
+    print(letra)
 
-        <section id="tabla" class="content-section">
-            <h2 class="text-2xl font-semibold mb-4 text-sky-700">Tabla Comparativa de Lenguajes Recomendados (2025)</h2>
-            <div class="bg-white p-1 sm:p-6 rounded-lg shadow">
-                <p class="mb-4 text-sm sm:text-base">Esta tabla resume las recomendaciones clave para principiantes, destacando la facilidad de aprendizaje, los casos de uso principales, la demanda en el mercado laboral, las perspectivas futuras y la ventaja clave de cada lenguaje. Utilízala como una referencia rápida para comparar opciones.</p>
-                <div class="table-responsive">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lenguaje</th>
-                                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Facilidad (Principiantes)</th>
-                                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Casos de Uso Principales</th>
-                                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Demanda (2025)</th>
-                                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Perspectivas Futuras</th>
-                                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ventaja Clave</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200 text-sm">
-                            <tr>
-                                <td class="font-semibold text-sky-700">Python</td>
-                                <td>Muy Fácil (20/100)</td>
-                                <td>IA/ML, Ciencia de Datos, Web (Backend), Automatización</td>
-                                <td>Muy Alta</td>
-                                <td>Excelente (IA/IoT)</td>
-                                <td>Versatilidad, Acceso a IA</td>
-                            </tr>
-                            <tr>
-                                <td class="font-semibold text-sky-700">JavaScript</td>
-                                <td>Fácil (40/100)</td>
-                                <td>Web (Frontend/Backend), Móvil, IoT, Serverless</td>
-                                <td>Muy Alta</td>
-                                <td>Excelente (Web)</td>
-                                <td>Resultados Visuales, Full-Stack</td>
-                            </tr>
-                            <tr>
-                                <td class="font-semibold text-sky-700">Java</td>
-                                <td>Moderada (70/100)</td>
-                                <td>Empresarial, Android, Cloud, Big Data</td>
-                                <td>Alta</td>
-                                <td>Fuerte (Empresarial)</td>
-                                <td>Robustez, Estructura</td>
-                            </tr>
-                            <tr>
-                                <td class="font-semibold text-sky-700">TypeScript</td>
-                                <td>Moderada (JS users)</td>
-                                <td>Web a Gran Escala, Frameworks (Angular)</td>
-                                <td>Alta</td>
-                                <td>Fuerte (Profesionalización Web)</td>
-                                <td>Calidad/Mantenibilidad Código</td>
-                            </tr>
-                            <tr>
-                                <td class="font-semibold text-sky-700">Kotlin</td>
-                                <td>Moderada (65/100)</td>
-                                <td>Apps Android Modernas, Backend</td>
-                                <td>Alta</td>
-                                <td>Fuerte (Preferido Android)</td>
-                                <td>Concisión, Desarrollo Móvil</td>
-                            </tr>
-                            <tr>
-                                <td class="font-semibold text-sky-700">Swift</td>
-                                <td>Moderada (50/100)</td>
-                                <td>Apps iOS/macOS, Ecosistema Apple</td>
-                                <td>Alta</td>
-                                <td>Fuerte (Esencial Apple)</td>
-                                <td>Sintaxis Limpia, Móvil Nativo</td>
-                            </tr>
-                            <tr>
-                                <td class="font-semibold text-sky-700">Go</td>
-                                <td>Moderada (60/100)</td>
-                                <td>Cloud, Microservicios, Sistemas Distribuidos</td>
-                                <td>Alta</td>
-                                <td>Excelente (Infraestructura Nube)</td>
-                                <td>Eficiencia, Escalabilidad</td>
-                            </tr>
-                            <tr>
-                                <td class="font-semibold text-sky-700">Rust</td>
-                                <td>Difícil (80/100)</td>
-                                <td>Sistemas, Backend, Motores Juegos, Blockchain</td>
-                                <td>Alta y Creciente</td>
-                                <td>Excelente (Seguridad/Rendimiento)</td>
-                                <td>Seguridad Memoria, Alto Rendimiento</td>
-                            </tr>
-                            <tr>
-                                <td class="font-semibold text-sky-700">HTML/CSS</td>
-                                <td>Muy Fácil (10/100)</td>
-                                <td>Estructura y Estilo Web</td>
-                                <td>Muy Alta</td>
-                                <td>Excelente (Base Web)</td>
-                                <td>Fundamentales, Visual Inmediato</td>
-                            </tr>
-                            <tr>
-                                <td class="font-semibold text-sky-700">SQL</td>
-                                <td>Muy Fácil</td>
-                                <td>Gestión Bases de Datos, Análisis Datos</td>
-                                <td>Esencial</td>
-                                <td>Excelente (BBDD Universal)</td>
-                                <td>Comunicación con Datos</td>
-                            </tr>
-                        </tbody>
-                    </table>
+# Iterar un número específico de veces usando range()
+# range(5) genera números del 0 al 4
+for i in range(5):
+    print(f"Número: {i}")
+
+# range(inicio, fin, paso)
+# Imprimir números pares del 2 al 10
+for num in range(2, 11, 2): # 2, 4, 6, 8, 10
+    print(num)</code></pre>
+                    </div>
+                    <h4>Ejercicios para Practicar</h4>
+                    <ol class="list-decimal">
+                        <li>Imprime los números del 1 al 100.</li>
+                        <li>Pide al usuario un número <code>n</code>. Imprime la tabla de multiplicar de ese número del 1 al 10 (ej: si <code>n=5</code>, imprime "5x1=5", "5x2=10", ..., "5x10=50").</li>
+                        <li>Dada una lista de nombres: <code>nombres = ["Ana", "Luis", "Eva", "Juan"]</code>, crea un nuevo mensaje de saludo personalizado para cada nombre e imprímelo.</li>
+                    </ol>
+                    <h4>Ejercicios de Lógica de Programación</h4>
+                    <ol class="list-decimal">
+                        <li>Tienes una lista de precios de productos. ¿Cómo calcularías el precio total de todos los productos usando un bucle <code>for</code> y una variable acumuladora?</li>
+                        <li>¿Cómo encontrarías la palabra más larga en una lista de palabras usando un bucle <code>for</code>? (Pista: necesitarás una variable para guardar la palabra más larga encontrada hasta el momento y otra para su longitud).</li>
+                    </ol>
+                    <h4>Trucos y Consejos</h4>
+                    <ul class="list-disc">
+                        <li>La variable que usas en el <code>for</code> (ej: <code>fruta</code> en <code>for fruta in frutas:</code>) toma el valor de cada elemento de la secuencia en cada iteración.</li>
+                        <li><code>range(N)</code> genera números de <code>0</code> a <code>N-1</code>.</li>
+                        <li>Puedes usar <code>break</code> para salir de un bucle prematuramente y <code>continue</code> para saltar a la siguiente iteración del bucle.</li>
+                    </ul>
                 </div>
-            </div>
-        </section>
-         <footer class="text-center mt-12 py-6 border-t border-stone-300">
-            <p class="text-sm text-stone-600">&copy; 2025 Explorador de Lenguajes de Programación. Basado en el informe "Guía Estratégica para Principiantes".</p>
-        </footer>
-    </main>
+            </section>
+
+            <section id="modulo2_3" class="content-section space-y-6">
+                <h2>Módulo 2.3: `while` loops (Bucles Condicionales)</h2>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h4>Explicación</h4>
+                    <p>Un bucle <code>while</code> ejecuta un bloque de código repetidamente <strong>mientras</strong> una condición especificada sea <code>True</code>.</p>
+                    <h4>Ejemplos de Código</h4>
+                    <div class="code-block">
+                        <button class="copy-btn" title="Copiar código">Copiar</button>
+                        <pre><code class="language-python">contador = 0
+while contador < 5:
+    print(f"El contador es {contador}")
+    contador += 1  # ¡Importante! Actualizar la variable de control
+print("Fin del bucle while")
+
+# Bucle que se ejecuta hasta que el usuario ingrese 'salir'
+entrada = ""
+while entrada.lower() != "salir":
+    entrada = input("Escribe algo (o 'salir' para terminar): ")
+    print(f"Escribiste: {entrada}")</code></pre>
+                    </div>
+                    <h4>Ejercicios para Practicar</h4>
+                    <ol class="list-decimal">
+                        <li>Crea un programa que pida números al usuario y los sume, hasta que el usuario ingrese un <code>0</code>. Al final, muestra la suma total.</li>
+                        <li>Simula una cuenta atrás desde un número ingresado por el usuario hasta 1, imprimiendo cada número.</li>
+                        <li>Pide al usuario que adivine una contraseña secreta. El bucle debe continuar hasta que la adivine. (Para empezar, puedes poner la contraseña directamente en el código).</li>
+                    </ol>
+                    <h4>Ejercicios de Lógica de Programación</h4>
+                    <ol class="list-decimal">
+                        <li>Quieres simular un juego donde un personaje tiene 100 puntos de vida y recibe ataques que le restan una cantidad aleatoria de vida (entre 5 y 15 puntos) en cada turno. El juego termina cuando la vida del personaje es 0 o menos. ¿Cómo usarías un bucle <code>while</code> para esto?</li>
+                        <li>¿Cómo validarías que la entrada del usuario sea un número positivo usando un bucle <code>while</code>? (El bucle debería repetirse si ingresa un número negativo o cero).</li>
+                    </ol>
+                    <h4>Trucos y Consejos</h4>
+                    <ul class="list-disc">
+                        <li><strong>¡Cuidado con los bucles infinitos!</strong> Asegúrate de que la condición del <code>while</code> eventualmente se vuelva <code>False</code>.</li>
+                        <li>Un <code>while True:</code> con un <code>break</code> dentro es una forma común de crear bucles que terminan bajo ciertas condiciones internas.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="modulo3_1" class="content-section space-y-6">
+                <h2>Módulo 3.1: Listas (Lists)</h2>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h4>Explicación</h4>
+                    <p>Las listas son colecciones <strong>ordenadas</strong> y <strong>mutables</strong> de elementos. Se acceden por índice (empezando en 0).</p>
+                    <ul class="list-disc">
+                        <li>Creación: <code>mi_lista = [1, "hola", 3.0]</code></li>
+                        <li>Acceso: <code>mi_lista[0]</code>, <code>mi_lista[-1]</code> (último).</li>
+                        <li>Slicing: <code>mi_lista[1:3]</code>.</li>
+                        <li>Métodos: <code>append()</code>, <code>insert()</code>, <code>remove()</code>, <code>pop()</code>, <code>sort()</code>, <code>len()</code>.</li>
+                    </ul>
+                    <h4>Ejemplos de Código</h4>
+                    <div class="code-block">
+                        <button class="copy-btn" title="Copiar código">Copiar</button>
+                        <pre><code class="language-python">numeros = [10, 5, 25, 15]
+print(f"Lista original: {numeros}")
+
+numeros.append(30)
+print(f"Después de append: {numeros}")
+
+numeros.sort()
+print(f"Lista ordenada: {numeros}")
+
+print(f"Elemento en índice 1: {numeros[1]}")
+print(f"Longitud de la lista: {len(numeros)}")</code></pre>
+                    </div>
+                    <h4>Ejercicios para Practicar</h4>
+                    <ol class="list-decimal">
+                        <li>Crea una lista con los nombres de tus 3 ciudades favoritas.
+                            <ul class="list-disc list-inside ml-6">
+                                <li>Añade una ciudad más al final.</li>
+                                <li>Inserta una ciudad al principio.</li>
+                                <li>Elimina la segunda ciudad.</li>
+                                <li>Imprime la lista final y su longitud.</li>
+                            </ul>
+                        </li>
+                        <li>Pide al usuario 5 números, guárdalos en una lista. Calcula e imprime la suma y el promedio.</li>
+                    </ol>
+                    <h4>Ejercicios de Lógica de Programación</h4>
+                    <ol class="list-decimal">
+                        <li>Tienes una lista de notas. Cuenta cuántos aprobaron (&gt;= 5).</li>
+                        <li>Crea una nueva lista solo con los números pares de una lista original.</li>
+                    </ol>
+                    <h4>Trucos y Consejos</h4>
+                    <ul class="list-disc">
+                        <li>Las listas pueden tener elementos de diferentes tipos.</li>
+                        <li>Usa <code>in</code> para verificar si un elemento está en una lista.</li>
+                        <li>Copia listas con <code>lista_copia = lista_original[:]</code> o <code>list(lista_original)</code>.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="modulo3_2" class="content-section space-y-6">
+                <h2>Módulo 3.2: Tuplas (Tuples)</h2>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h4>Explicación</h4>
+                    <p>Las tuplas son colecciones <strong>ordenadas</strong> e <strong>inmutables</strong>. No pueden cambiarse después de su creación.</p>
+                     <ul class="list-disc">
+                        <li>Creación: <code>mi_tupla = (1, "hola", 3.0)</code> o <code>1, "hola", 3.0</code>. Un solo elemento: <code>(5,)</code>.</li>
+                        <li>Acceso y Slicing: Igual que las listas.</li>
+                    </ul>
+                    <h4>Ejemplos de Código</h4>
+                    <div class="code-block">
+                        <button class="copy-btn" title="Copiar código">Copiar</button>
+                        <pre><code class="language-python">punto = (10, 20, 5) # Coordenadas x, y, z
+print(f"Coordenada X: {punto[0]}")
+
+# Esto daría un error:
+# punto[0] = 15
+
+# Desempaquetado de tuplas
+nombre, edad, ciudad = ("Ana", 30, "Madrid")
+print(f"{nombre} tiene {edad} años y vive en {ciudad}.")</code></pre>
+                    </div>
+                    <h4>Ejercicios para Practicar</h4>
+                    <ol class="list-decimal">
+                        <li>Crea una tupla con los meses del año. Imprime el primer y último mes.</li>
+                        <li>Crea una tupla para un estudiante: (id, nombre, curso).</li>
+                        <li>Intenta añadir un elemento a una tupla y observa el error.</li>
+                    </ol>
+                    <h4>Ejercicios de Lógica de Programación</h4>
+                    <ol class="list-decimal">
+                        <li>Si una función devuelve varios valores, ¿es una tupla una buena opción? ¿Por qué?</li>
+                        <li>¿Cómo iterarías sobre los elementos de una tupla?</li>
+                    </ol>
+                    <h4>Trucos y Consejos</h4>
+                    <ul class="list-disc">
+                        <li>Las tuplas pueden ser más eficientes si los datos no cambian.</li>
+                        <li>Útiles como claves en diccionarios por ser inmutables.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="modulo3_3" class="content-section space-y-6">
+                <h2>Módulo 3.3: Diccionarios (Dictionaries)</h2>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h4>Explicación</h4>
+                    <p>Colecciones <strong>no ordenadas</strong> (orden de inserción en Python 3.7+) y <strong>mutables</strong> de pares <strong>clave-valor</strong>. Claves únicas e inmutables.</p>
+                    <ul class="list-disc">
+                        <li>Creación: <code>{"clave1": "valor1", "edad": 25}</code></li>
+                        <li>Acceso: <code>mi_diccionario["clave"]</code>.</li>
+                        <li>Añadir/Modificar: <code>mi_diccionario["nueva"] = "valor"</code>.</li>
+                        <li>Métodos: <code>get()</code>, <code>keys()</code>, <code>values()</code>, <code>items()</code>.</li>
+                    </ul>
+                    <h4>Ejemplos de Código</h4>
+                    <div class="code-block">
+                        <button class="copy-btn" title="Copiar código">Copiar</button>
+                        <pre><code class="language-python">capitales = {"España": "Madrid", "Francia": "París"}
+print(capitales["Francia"])
+
+capitales["Alemania"] = "Berlín"
+print(capitales.get("Portugal", "No encontrada"))
+
+for pais, capital in capitales.items():
+    print(f"Capital de {pais}: {capital}.")</code></pre>
+                    </div>
+                    <h4>Ejercicios para Practicar</h4>
+                    <ol class="list-decimal">
+                        <li>Crea un diccionario de precios de productos.
+                            <ul class="list-disc list-inside ml-6">
+                                <li>Imprime el precio de un producto.</li>
+                                <li>Añade un nuevo producto.</li>
+                                <li>Modifica un precio.</li>
+                                <li>Muestra todos los productos (claves).</li>
+                            </ul>
+                        </li>
+                        <li>Crea un diccionario para un estudiante: "nombre", "asignaturas" (lista), "notas" (lista).</li>
+                    </ol>
+                    <h4>Ejercicios de Lógica de Programación</h4>
+                    <ol class="list-decimal">
+                        <li>Cuenta la frecuencia de cada letra en una frase usando un diccionario.</li>
+                        <li>Calcula el costo total de una lista de compra usando un diccionario de precios. Maneja productos no encontrados.</li>
+                    </ol>
+                    <h4>Trucos y Consejos</h4>
+                    <ul class="list-disc">
+                        <li>Las claves son sensibles a mayúsculas/minúsculas.</li>
+                        <li>Usa <code>in</code> para verificar si una clave existe.</li>
+                        <li>Elimina con <code>del</code> o <code>pop()</code>.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="modulo3_4" class="content-section space-y-6">
+                <h2>Módulo 3.4: Conjuntos (Sets)</h2>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h4>Explicación</h4>
+                    <p>Colecciones <strong>no ordenadas</strong> y <strong>mutables</strong> de elementos <strong>únicos</strong>. No permiten duplicados.</p>
+                    <ul class="list-disc">
+                        <li>Creación: <code>{1, 2, 3, 2}</code> (resulta en <code>{1, 2, 3}</code>). Vacío: <code>set()</code>.</li>
+                        <li>Métodos: <code>add()</code>, <code>remove()</code>, <code>discard()</code>, <code>union()</code>, <code>intersection()</code>, <code>difference()</code>.</li>
+                    </ul>
+                    <h4>Ejemplos de Código</h4>
+                    <div class="code-block">
+                        <button class="copy-btn" title="Copiar código">Copiar</button>
+                        <pre><code class="language-python">numeros_loteria = {7, 15, 23, 30, 15, 42}
+print(f"Números: {numeros_loteria}")
+
+numeros_loteria.add(10)
+print(f"Añadido 10: {numeros_loteria}")
+
+mis_numeros = {10, 20, 30, 40}
+comunes = numeros_loteria.intersection(mis_numeros)
+print(f"Comunes: {comunes}")
+
+todos = numeros_loteria.union(mis_numeros)
+print(f"Unión: {todos}")</code></pre>
+                    </div>
+                    <h4>Ejercicios para Practicar</h4>
+                    <ol class="list-decimal">
+                        <li>Crea dos conjuntos de nombres de amigos.
+                            <ul class="list-disc list-inside ml-6">
+                                <li>Encuentra amigos comunes (intersección).</li>
+                                <li>Encuentra todos los amigos únicos (unión).</li>
+                                <li>Encuentra amigos en el primer conjunto pero no en el segundo (diferencia).</li>
+                            </ul>
+                        </li>
+                        <li>Convierte una lista con duplicados a un conjunto y luego de nuevo a lista para eliminar duplicados.</li>
+                    </ol>
+                    <h4>Ejercicios de Lógica de Programación</h4>
+                    <ol class="list-decimal">
+                        <li>Obtén una lista de emails activos (registrados pero no cancelados) usando dos listas de emails.</li>
+                        <li>Verifica si todos los elementos de una lista pequeña están en un conjunto más grande.</li>
+                    </ol>
+                    <h4>Trucos y Consejos</h4>
+                    <ul class="list-disc">
+                        <li>Eficientes para verificar existencia de un elemento (<code>in</code>).</li>
+                        <li>No se accede por índice (no ordenados).</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="modulo4" class="content-section space-y-6">
+                <h2>Módulo 4: Funciones</h2>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h4>Explicación</h4>
+                    <p>Bloques de código reutilizables que realizan una tarea específica. Ayudan a organizar y evitar repetición.</p>
+                    <ul class="list-disc">
+                        <li><strong>Definición:</strong> <code>def nombre_funcion(parametros):</code>. Código indentado.</li>
+                        <li><strong>Parámetros:</strong> Variables que recibe la función.</li>
+                        <li><strong>Retorno:</strong> Usa <code>return valor</code>. Devuelve <code>None</code> si no hay <code>return</code>.</li>
+                        <li><strong>Docstrings:</strong> <code>"""Explica qué hace la función."""</code> al inicio.</li>
+                    </ul>
+                    <h4>Ejemplos de Código</h4>
+                    <div class="code-block">
+                        <button class="copy-btn" title="Copiar código">Copiar</button>
+                        <pre><code class="language-python">def saludar(nombre):
+    """Devuelve un saludo personalizado."""
+    mensaje = f"¡Hola, {nombre}! Bienvenido/a."
+    return mensaje
+
+print(saludar("Ana"))
+
+def sumar(a, b):
+    return a + b
+print(f"5 + 3 = {sumar(5, 3)}")
+
+def imprimir_cuadrado(numero):
+    """Imprime el cuadrado. No devuelve nada explícitamente."""
+    print(f"El cuadrado de {numero} es {numero ** 2}")
+
+valor_retornado = imprimir_cuadrado(5)
+print(f"Valor retornado: {valor_retornado}") # None</code></pre>
+                    </div>
+                    <h4>Ejercicios para Practicar</h4>
+                    <ol class="list-decimal">
+                        <li>Función <code>calcular_area_rectangulo(base, altura)</code> que devuelva el área.</li>
+                        <li>Función <code>es_par(numero)</code> que devuelva <code>True</code> si es par, <code>False</code> si no.</li>
+                        <li>Función <code>convertir_a_mayusculas(cadena)</code> que devuelva la cadena en mayúsculas (usa <code>.upper()</code>).</li>
+                        <li>Función que reciba una lista de números y devuelva su suma.</li>
+                    </ol>
+                    <h4>Ejercicios de Lógica de Programación</h4>
+                    <ol class="list-decimal">
+                        <li>Función <code>obtener_calificacion(nota)</code> que devuelva "Suspenso", "Aprobado", etc.</li>
+                        <li>Función para determinar si una palabra es un palíndromo (devuelve <code>True</code>/<code>False</code>).</li>
+                    </ol>
+                    <h4>Trucos y Consejos</h4>
+                    <ul class="list-disc">
+                        <li>Nombres descriptivos (verbos).</li>
+                        <li>Funciones deben hacer una cosa bien.</li>
+                        <li>Parámetros con valores por defecto: <code>def func(nombre, saludo="Hola"):</code>.</li>
+                        <li>Variables locales solo existen dentro de la función.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="modulo5" class="content-section space-y-6">
+                <h2>Módulo 5: Manejo de Errores</h2>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h4>Explicación</h4>
+                    <p>Los errores (excepciones) pueden ocurrir. Manejarlos evita que el programa se detenga.</p>
+                    <ul class="list-disc">
+                        <li><code>try</code>: Código que podría causar error.</li>
+                        <li><code>except TipoDeError:</code>: Se ejecuta si ocurre ese error en <code>try</code>.</li>
+                        <li><code>except Exception as e:</code>: Captura cualquier error.</li>
+                        <li><code>else</code>: (Opcional) Si no hubo excepción en <code>try</code>.</li>
+                        <li><code>finally</code>: (Opcional) Se ejecuta siempre.</li>
+                    </ul>
+                    <p class="mt-2"><strong>Errores Comunes:</strong> <code>ValueError</code>, <code>TypeError</code>, <code>IndexError</code>, <code>KeyError</code>, <code>ZeroDivisionError</code>, <code>FileNotFoundError</code>.</p>
+                    <h4>Ejemplos de Código</h4>
+                    <div class="code-block">
+                        <button class="copy-btn" title="Copiar código">Copiar</button>
+                        <pre><code class="language-python">try:
+    dividendo = float(input("Dividendo: "))
+    divisor = float(input("Divisor: "))
+    resultado = dividendo / divisor
+    print(f"Resultado: {resultado}")
+except ValueError:
+    print("Error: Ingresa números válidos.")
+except ZeroDivisionError:
+    print("Error: No se puede dividir por cero.")
+except Exception as e:
+    print(f"Error inesperado: {e}")
+else:
+    print("División exitosa.")
+finally:
+    print("--- Fin del intento ---")
+
+mi_lista = [10, 20]
+try:
+    indice = int(input("Índice: "))
+    print(mi_lista[indice])
+except IndexError:
+    print("Error: Índice fuera de rango.")
+except ValueError:
+    print("Error: Ingresa un número entero.")</code></pre>
+                    </div>
+                    <h4>Ejercicios para Practicar</h4>
+                    <ol class="list-decimal">
+                        <li>Modifica el ejercicio de división para manejar <code>ValueError</code> y <code>ZeroDivisionError</code>.</li>
+                        <li>Pide un mes y muestra sus días (usa un diccionario). Maneja <code>KeyError</code>.</li>
+                        <li>Función que intente convertir cadena a entero. Devuelve entero o <code>None</code> si falla.</li>
+                    </ol>
+                    <h4>Ejercicios de Lógica de Programación</h4>
+                    <ol class="list-decimal">
+                        <li>Carga una configuración de forma segura usando <code>try-except</code>, con valores por defecto si falla.</li>
+                        <li>Conexión a servicio externo: usa <code>try-except</code> y un bucle para reintentar antes de rendirse.</li>
+                    </ol>
+                    <h4>Trucos y Consejos</h4>
+                    <ul class="list-disc">
+                        <li>Sé específico con el tipo de error en <code>except</code>.</li>
+                        <li>Evita <code>except Exception:</code> genérico si es posible.</li>
+                        <li>Registra errores o muéstralos amigablemente.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="modulo6" class="content-section space-y-6">
+                <h2>Módulo 6: Entrada/Salida Básica (Archivos)</h2>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h4>Explicación</h4>
+                    <p>Aprenderás a leer y escribir datos en archivos de texto.</p>
+                    <ul class="list-disc">
+                        <li><code>open(nombre_archivo, modo)</code>: Abre un archivo.
+                            <ul class="list-disc list-inside ml-6">
+                                <li>Modos: <code>'r'</code> (leer), <code>'w'</code> (escribir, sobrescribe), <code>'a'</code> (añadir), <code>'r+'</code> (leer/escribir).</li>
+                            </ul>
+                        </li>
+                        <li>Lectura: <code>archivo.read()</code>, <code>archivo.readline()</code>, <code>archivo.readlines()</code>.</li>
+                        <li>Escritura: <code>archivo.write(cadena)</code>.</li>
+                        <li><code>archivo.close()</code>: ¡Muy importante!</li>
+                        <li><code>with open(...) as archivo:</code>: Recomendado, cierra automáticamente.</li>
+                    </ul>
+                    <h4>Ejemplos de Código</h4>
+                    <div class="code-block">
+                        <button class="copy-btn" title="Copiar código">Copiar</button>
+                        <pre><code class="language-python"># Escribir (sobrescribe)
+try:
+    with open("mi_archivo.txt", "w") as f:
+        f.write("Hola, Python!\n")
+        f.write("Segunda línea.\n")
+    print("Archivo escrito.")
+except IOError:
+    print("Error al escribir.")
+
+# Leer completo
+try:
+    with open("mi_archivo.txt", "r") as f:
+        contenido = f.read()
+        print("\nContenido:\n" + contenido)
+except FileNotFoundError:
+    print("Error: Archivo no encontrado.")
+
+# Leer línea por línea
+try:
+    with open("mi_archivo.txt", "r") as f:
+        print("\nLínea por línea:")
+        for linea in f:
+            print(linea.strip()) # .strip() quita espacios/saltos
+except FileNotFoundError:
+    print("Error: Archivo no encontrado.")
+
+# Añadir contenido
+try:
+    with open("mi_archivo.txt", "a") as f:
+        f.write("Línea añadida.\n")
+    print("\nContenido añadido.")
+    with open("mi_archivo.txt", "r") as f_ver:
+        print("Verificando:\n" + f_ver.read())
+except IOError:
+    print("Error al añadir.")</code></pre>
+                    </div>
+                    <h4>Ejercicios para Practicar</h4>
+                    <ol class="list-decimal">
+                        <li>Pide nombre y edad, guárdalos en <code>usuario.txt</code> (cada dato en nueva línea).</li>
+                        <li>Lee <code>usuario.txt</code> y muestra la información.</li>
+                        <li>Crea <code>lista_compras.txt</code>. Lee y muestra artículos numerados.</li>
+                        <li>Modifica el anterior para permitir añadir nuevos artículos a <code>lista_compras.txt</code>.</li>
+                    </ol>
+                    <h4>Ejercicios de Lógica de Programación</h4>
+                    <ol class="list-decimal">
+                        <li>Archivo con un número por línea. Lee, suma y muestra el total (maneja <code>ValueError</code>).</li>
+                        <li>Copia el contenido de <code>origen.txt</code> a <code>destino.txt</code> línea por línea.</li>
+                    </ol>
+                    <h4>Trucos y Consejos</h4>
+                    <ul class="list-disc">
+                        <li>Usa siempre <code>with open(...)</code>.</li>
+                        <li><code>.strip()</code> es útil para limpiar líneas leídas.</li>
+                        <li>Maneja <code>FileNotFoundError</code>.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="proyectos" class="content-section space-y-6">
+                <h2>Proyectos Prácticos Integradores (Etapa 1)</h2>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <p>Ahora es el momento de combinar todo lo que has aprendido. Intenta realizar estos proyectos:</p>
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="text-sky-700">1. Calculadora Mejorada</h4>
+                            <ul class="list-disc">
+                                <li>Crea funciones para cada operación (suma, resta, multiplicación, división).</li>
+                                <li>Pide al usuario dos números y la operación que desea realizar.</li>
+                                <li>Maneja errores si el usuario ingresa texto en lugar de números o intenta dividir por cero.</li>
+                                <li>Permite al usuario realizar múltiples cálculos hasta que decida salir.</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="text-sky-700">2. Juego de Adivinanza de Números Avanzado</h4>
+                            <ul class="list-disc">
+                                <li>El programa genera un número aleatorio entre 1 y 100 (investiga el módulo <code>random</code>, <code>random.randint(a, b)</code>).</li>
+                                <li>El usuario intenta adivinarlo.</li>
+                                <li>Después de cada intento, el programa dice si el número ingresado es mayor o menor que el secreto.</li>
+                                <li>Cuenta el número de intentos.</li>
+                                <li>Opcional: Guarda el nombre del jugador y su mejor puntuación (menos intentos) en un archivo.</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="text-sky-700">3. Gestor Simple de Lista de Tareas</h4>
+                            <ul class="list-disc">
+                                <li>Permite al usuario: Añadir tarea, Ver tareas (numeradas), Marcar como completada, Eliminar tarea, Salir.</li>
+                                <li>Usa funciones para cada opción del menú.</li>
+                                <li>Guarda la lista de tareas en un archivo (<code>tareas.txt</code>) y cárgala al inicio.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="conclusion" class="content-section space-y-6">
+                <h2>Conclusión de la Etapa 1</h2>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <p class="font-semibold text-lg">¡Felicidades por completar la Etapa 1 de Fundamentos de Python!</p>
+                    <p>Has aprendido sobre:</p>
+                    <ul class="list-disc">
+                        <li>Sintaxis básica, variables y tipos de datos.</li>
+                        <li>Operadores para realizar cálculos y comparaciones.</li>
+                        <li>Estructuras de control de flujo (<code>if</code>, <code>for</code>, <code>while</code>).</li>
+                        <li>Estructuras de datos esenciales (listas, tuplas, diccionarios, conjuntos).</li>
+                        <li>Funciones para código modular y reutilizable.</li>
+                        <li>Manejo de errores básicos.</li>
+                        <li>Lectura y escritura básica de archivos.</li>
+                    </ul>
+                    <p class="mt-4"><strong>La práctica es la clave.</strong> Sigue codificando, experimentando y construyendo pequeños proyectos.</p>
+                    <p class="mt-2">¡Sigue adelante con tu aprendizaje de Python! Hay mucho más por descubrir.</p>
+                </div>
+            </section>
+
+            <section id="recursos" class="content-section space-y-6">
+                <h2>Recursos Recomendados</h2>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <p>Estos recursos te ayudarán a continuar tu aprendizaje (mencionados en la guía original):</p>
+                    <ul class="list-disc space-y-2">
+                        <li><strong>Cursos interactivos:</strong>
+                            <ul class="list-circle list-inside ml-6">
+                                <li>Mimo's Python course</li>
+                                <li>Codecademy's 'Python 3'</li>
+                            </ul>
+                        </li>
+                        <li><strong>Tutoriales en vídeo:</strong>
+                            <ul class="list-circle list-inside ml-6">
+                                <li>"Python for Everybody" de Dr. Charles Severance en Coursera</li>
+                                <li>Tutoriales de Corey Schafer en YouTube</li>
+                            </ul>
+                        </li>
+                        <li><strong>Documentación oficial:</strong> <a href="https://www.python.org" target="_blank" class="text-sky-600 hover:underline">Python.org</a></li>
+                        <li><strong>Herramientas de IA para consulta:</strong> ChatGPT, Claude.AI, Perplexity</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="ides" class="content-section space-y-6">
+                <h2>Sobre el Mejor IDE para Python</h2>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <p>Como se menciona en el "Tutorial de Python para Principiantes", la elección del IDE depende de tus preferencias. Para principiantes, algunas excelentes opciones son:</p>
+                    <ul class="list-disc space-y-2">
+                        <li><strong>IDLE:</strong> Viene con Python, es simple y bueno para empezar.</li>
+                        <li><strong>Visual Studio Code (VS Code):</strong> Muy popular, ligero, versátil y con muchas extensiones para Python. Altamente recomendado.</li>
+                        <li><strong>PyCharm (Community Edition):</strong> Un IDE potente y específico para Python, con muchas herramientas útiles para escribir código limpio.</li>
+                        <li><strong>Jupyter Notebook:</strong> Excelente para aprendizaje interactivo, ciencia de datos y experimentar con código en "celdas".</li>
+                    </ul>
+                    <p class="mt-3">Te sugiero probar VS Code o PyCharm Community Edition una vez que te sientas cómodo con los conceptos básicos. ¡Ambos son excelentes para desarrollar proyectos más grandes!</p>
+                </div>
+            </section>
+
+            <footer class="text-center mt-12 py-6 border-t border-stone-300">
+                <p class="text-sm text-stone-600">&copy; 2025 Ruta de Aprendizaje Interactiva de Python. Inspirado en la guía original.</p>
+            </footer>
+        </main>
+    </div>
 
     <script>
-        const navButtons = document.querySelectorAll('.nav-button');
-        const contentSections = document.querySelectorAll('.content-section');
+        document.addEventListener('DOMContentLoaded', function () {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const contentSections = document.querySelectorAll('.content-section');
+            const collapsibles = document.querySelectorAll('.collapsible');
+            const sidebar = document.getElementById('sidebar');
+            const navToggle = document.getElementById('navToggle');
+            const mainContent = document.getElementById('mainContent');
 
-        function setActiveSection(targetId) {
-            navButtons.forEach(button => {
-                if (button.dataset.target === targetId) {
-                    button.classList.add('active');
-                } else {
-                    button.classList.remove('active');
-                }
-            });
-            contentSections.forEach(section => {
-                if (section.id === targetId) {
-                    section.classList.add('active');
-                } else {
-                    section.classList.remove('active');
-                }
-            });
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+            function setActiveSection(targetId) {
+                navLinks.forEach(link => link.classList.remove('active'));
+                contentSections.forEach(section => section.classList.remove('active'));
 
-        navButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                const targetId = button.dataset.target;
-                setActiveSection(targetId);
-            });
-        });
+                const activeLink = document.querySelector(`.nav-link[data-target="${targetId}"]`);
+                const activeSection = document.getElementById(targetId);
 
-        // Initialize with the 'inicio' section
-        setActiveSection('inicio');
-
-        // Chart.js for Demanda del Mercado
-        const demandaCtx = document.getElementById('demandaMercadoChart');
-        if (demandaCtx) {
-            new Chart(demandaCtx, {
-                type: 'bar',
-                data: {
-                    labels: ['Python (45.7%)', 'JavaScript (41.5%)', 'Java (39.5%)'],
-                    datasets: [{
-                        label: 'Demanda en el Mercado Laboral (%)',
-                        data: [45.7, 41.5, 39.5],
-                        backgroundColor: [
-                            'rgba(59, 130, 246, 0.7)', // blue-500
-                            'rgba(245, 158, 11, 0.7)', // amber-500
-                            'rgba(239, 68, 68, 0.7)'  // red-500
-                        ],
-                        borderColor: [
-                            'rgba(59, 130, 246, 1)',
-                            'rgba(245, 158, 11, 1)',
-                            'rgba(239, 68, 68, 1)'
-                        ],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    indexAxis: 'y',
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    let label = context.dataset.label || '';
-                                    if (label) {
-                                        label += ': ';
-                                    }
-                                    if (context.parsed.x !== null) {
-                                        label += context.parsed.x + '%';
-                                    }
-                                    return label;
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        x: {
-                            beginAtZero: true,
-                            max: 50,
-                            title: {
-                                display: true,
-                                text: 'Porcentaje de Reclutadores'
-                            }
-                        },
-                        y: {
-                            ticks: {
-                                autoSkip: false,
-                                callback: function(value, index, values) {
-                                    const label = this.getLabelForValue(value);
-                                    if (label.length > 20) { // Wrap label if too long
-                                        return label.substring(0, 20) + '...';
-                                    }
-                                    return label;
-                                }
-                            }
+                if (activeLink) activeLink.classList.add('active');
+                if (activeSection) activeSection.classList.add('active');
+                
+                // Ensure parent collapsible is also marked active and open if a child is active
+                if (activeLink && activeLink.closest('.submenu')) {
+                    const parentButton = activeLink.closest('.submenu').previousElementSibling;
+                    if (parentButton && parentButton.classList.contains('collapsible')) {
+                        parentButton.classList.add('active');
+                        if (!parentButton.nextElementSibling.classList.contains('open')) {
+                             parentButton.nextElementSibling.classList.add('open');
+                             parentButton.querySelector('.arrow').textContent = '▼';
                         }
                     }
                 }
+                // Scroll to top of content area
+                if (mainContent) {
+                    mainContent.scrollTo({ top: 0, behavior: 'smooth' });
+                } else {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            }
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', function (e) {
+                    if (this.dataset.target) {
+                        e.preventDefault();
+                        const targetId = this.dataset.target;
+                        
+                        // Deactivate other collapsibles' active state unless it's an ancestor
+                        collapsibles.forEach(coll => {
+                            if (!this.contains(coll) && !coll.contains(this) && !coll.classList.contains('active-parent-of-current')) {
+                                let isAncestor = false;
+                                let current = this;
+                                while(current.parentElement) {
+                                    if (current.parentElement.previousElementSibling === coll) {
+                                        isAncestor = true;
+                                        break;
+                                    }
+                                    current = current.parentElement;
+                                }
+                                if(!isAncestor) {
+                                   // coll.classList.remove('active'); // Keep parent active if child is active
+                                }
+                            }
+                        });
+
+                        setActiveSection(targetId);
+                        if (window.innerWidth < 768 && sidebar.classList.contains('open')) {
+                           sidebar.classList.remove('open');
+                           sidebar.classList.add('-translate-x-full');
+                           navToggle.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>'; // Hamburger
+                        }
+                    }
+                });
             });
-        }
+
+            collapsibles.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    // Don't remove 'active' if it's parent of current active link
+                    const submenu = this.nextElementSibling;
+                    const arrow = this.querySelector('.arrow');
+                    if (submenu && submenu.classList.contains('submenu')) {
+                        submenu.classList.toggle('open');
+                        if (submenu.classList.contains('open')) {
+                            this.classList.add('active'); // Keep parent button active when open
+                            if(arrow) arrow.textContent = '▼';
+                        } else {
+                            // Only remove active if no child link is active
+                            let childActive = false;
+                            submenu.querySelectorAll('.nav-link').forEach(nl => {
+                                if(nl.classList.contains('active')) childActive = true;
+                            });
+                            if (!childActive) this.classList.remove('active');
+                            if(arrow) arrow.textContent = '▶';
+                        }
+                    }
+                });
+            });
+
+            if (navToggle) {
+                navToggle.addEventListener('click', function() {
+                    sidebar.classList.toggle('-translate-x-full');
+                    sidebar.classList.toggle('open');
+                    if (sidebar.classList.contains('open')) {
+                        this.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>'; // X icon
+                    } else {
+                        this.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>'; // Hamburger
+                    }
+                });
+            }
+            
+            if (mainContent) {
+                mainContent.addEventListener('click', function() {
+                    if (window.innerWidth < 768 && sidebar.classList.contains('open')) {
+                        sidebar.classList.remove('open');
+                        sidebar.classList.add('-translate-x-full');
+                        navToggle.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>'; // Hamburger
+                    }
+                });
+            }
+
+            const copyButtons = document.querySelectorAll('.copy-btn');
+            const tooltip = document.getElementById('copyTooltip');
+            copyButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const codeBlock = this.closest('.code-block');
+                    const codeElement = codeBlock.querySelector('pre code');
+                    const codeToCopy = codeElement.innerText;
+                    navigator.clipboard.writeText(codeToCopy).then(() => {
+                        tooltip.style.display = 'block';
+                        const rect = button.getBoundingClientRect();
+                        tooltip.style.left = `${rect.left + window.pageXOffset}px`;
+                        tooltip.style.top = `${rect.bottom + window.pageYOffset + 5}px`;
+                        setTimeout(() => {
+                            tooltip.style.display = 'none';
+                        }, 1500);
+                    }).catch(err => {
+                        console.error('Error al copiar al portapapeles:', err);
+                        alert('Error al copiar. Por favor, copia manualmente.');
+                    });
+                });
+            });
+            setActiveSection('introduccion');
+        });
     </script>
 </body>
 </html>
