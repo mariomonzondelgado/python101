@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explorador Interactivo: Lenguajes de Programación para 2025</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Visualization & Content Choices:
+        - Resumen Ejecutivo: Text block. Goal: Inform.
+        - Criterios (Demanda, Facilidad, Versatilidad): Text blocks, bullet points. Goal: Inform.
+            - Demanda del Mercado (Python 45.7%, JS 41.5%, Java 39.5%): Horizontal Bar Chart (Chart.js). Goal: Compare. Interaction: Tooltips. Justification: Clear visual comparison of top 3.
+        - Lenguajes (Python, JS, Java, TS, Kotlin, Swift, Go, Rust): Card-based layout for each. Each card includes: Name, Brief Description, Casos de Uso, Facilidad de Aprendizaje, Demanda, Ventaja Clave. Goal: Inform.
+        - Habilidades Fundamentales (HTML/CSS, SQL): Similar card layout. Goal: Inform.
+        - Guía de Aprendizaje: Text blocks, bullet points. Goal: Inform.
+        - Tabla Comparativa: HTML table styled with Tailwind. Goal: Compare/Organize. Interaction: Hover highlighting. Justification: Direct representation of report's summary table for quick overview.
+        - All textual content directly from the report, summarized/restructured for clarity within the SPA.
+        - Library/Method: Chart.js for the bar chart. Vanilla JS for navigation and simple UI interactions. Tailwind for all styling and layout.
+        -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 350px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+                max-height: 400px;
+            }
+        }
+        .nav-button {
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .nav-button.active {
+            background-color: #0284c7; /* sky-600 */
+            color: white;
+        }
+        .nav-button:not(.active):hover {
+            background-color: #e0f2fe; /* sky-100 */
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .language-card {
+            background-color: white;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            margin-bottom: 1.5rem;
+        }
+        .language-card h3 {
+            color: #0369a1; /* sky-700 */
+        }
+        .table-responsive {
+            overflow-x: auto;
+        }
+        table th, table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb; /* gray-200 */
+        }
+        table th {
+            background-color: #f3f4f6; /* gray-100 */
+            font-weight: 600;
+        }
+        table tbody tr:hover {
+            background-color: #f9fafb; /* gray-50 */
+        }
+    </style>
+</head>
+<body class="bg-stone-100 text-stone-800">
+
+    <header class="bg-stone-800 text-white py-6 shadow-lg">
+        <div class="container mx-auto px-4 text-center">
+            <h1 class="text-3xl md:text-4xl font-bold">Lenguajes de Programación para 2025</h1>
+            <p class="mt-2 text-stone-300">Una guía interactiva para elegir tu próximo lenguaje.</p>
+        </div>
+    </header>
+
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-2 sm:px-4 py-2">
+            <ul class="flex flex-wrap justify-center space-x-1 sm:space-x-2">
+                <li><button data-target="inicio" class="nav-button active text-sm sm:text-base font-medium py-2 px-2 sm:px-4 rounded-md">Inicio</button></li>
+                <li><button data-target="criterios" class="nav-button text-sm sm:text-base font-medium py-2 px-2 sm:px-4 rounded-md">Criterios</button></li>
+                <li><button data-target="destacados" class="nav-button text-sm sm:text-base font-medium py-2 px-2 sm:px-4 rounded-md">Destacados</button></li>
+                <li><button data-target="especializados" class="nav-button text-sm sm:text-base font-medium py-2 px-2 sm:px-4 rounded-md">Especializados</button></li>
+                <li><button data-target="fundamentales" class="nav-button text-sm sm:text-base font-medium py-2 px-2 sm:px-4 rounded-md">Fundamentos</button></li>
+                <li><button data-target="aprendizaje" class="nav-button text-sm sm:text-base font-medium py-2 px-2 sm:px-4 rounded-md">Aprendizaje</button></li>
+                <li><button data-target="tabla" class="nav-button text-sm sm:text-base font-medium py-2 px-2 sm:px-4 rounded-md">Tabla Comparativa</button></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container mx-auto p-4 md:p-8">
+        <section id="inicio" class="content-section active">
+            <h2 class="text-2xl font-semibold mb-4 text-sky-700">Resumen Ejecutivo: Su Puerta de Entrada a la Programación en 2025</h2>
+            <div class="bg-white p-6 rounded-lg shadow space-y-4">
+                <p>Esta sección proporciona una visión general de las recomendaciones del informe. La industria tecnológica evoluciona rápidamente, impulsada por la IA, la nube y el IoT. Aprender programación en 2025 es una excelente oportunidad, con una alta demanda de desarrolladores.</p>
+                <p><strong>Python</strong> y <strong>JavaScript</strong> son los puntos de partida más recomendados universalmente por su versatilidad y robustos ecosistemas. Para intereses específicos, <strong>Kotlin</strong> (Android), <strong>Swift</strong> (iOS), <strong>Go</strong> (nube/sistemas) y <strong>TypeScript</strong> (web a gran escala) son opciones atractivas.</p>
+                <p>La elección "más interesante" depende de alinear intereses personales y profesionales con la demanda del mercado y la facilidad de aprendizaje.</p>
+            </div>
+        </section>
+
+        <section id="criterios" class="content-section">
+            <h2 class="text-2xl font-semibold mb-4 text-sky-700">Entendiendo el "Porqué": Criterios para Elegir su Primer Lenguaje</h2>
+            <div class="bg-white p-6 rounded-lg shadow space-y-6">
+                <p>Aquí exploramos los factores cruciales al elegir un lenguaje de programación en 2025. Comprender estos criterios te ayudará a tomar una decisión informada que se alinee con tus objetivos y el panorama tecnológico actual.</p>
+                
+                <div>
+                    <h3 class="text-xl font-semibold mb-2 text-sky-600">A. Demanda del Mercado Laboral y Potencial de Crecimiento</h3>
+                    <p>Python, JavaScript y Java lideran la demanda. Python es el más buscado (45.7%), seguido de JavaScript (41.5%) y Java (39.5%). El crecimiento de la IA impulsa a Python. JavaScript es clave por las SPAs y su ecosistema full-stack.</p>
+                    <p class="mt-2">La demanda se extiende a los ecosistemas (frameworks como React para JS, Django para Python). Lenguajes emergentes como Rust, Go y TypeScript también ganan tracción.</p>
+                    <div class="mt-4 chart-container">
+                        <canvas id="demandaMercadoChart"></canvas>
+                    </div>
+                     <p class="text-sm text-center mt-2 text-stone-600">Porcentaje de reclutadores buscando habilidades en el lenguaje.</p>
+                </div>
+
+                <div>
+                    <h3 class="text-xl font-semibold mb-2 text-sky-600">B. Facilidad de Aprendizaje y Amigabilidad para Principiantes</h3>
+                    <p>La sintaxis simple es clave. Python, JavaScript, Ruby y HTML/CSS son fáciles por su sintaxis similar al inglés y amplios recursos. Python destaca por su legibilidad. JavaScript permite ver resultados en navegadores rápidamente.</p>
+                    <p class="mt-2">La facilidad puede ser subjetiva (Java es más fácil con experiencia en POO). Los lenguajes fáciles fomentan grandes comunidades y recursos, creando un ciclo positivo de aprendizaje.</p>
+                </div>
+
+                <div>
+                    <h3 class="text-xl font-semibold mb-2 text-sky-600">C. Versatilidad y Dominios de Aplicación</h3>
+                    <p>Python y JavaScript son muy versátiles (web, ciencia de datos, IA, automatización). Otros son más especializados: Swift/Kotlin (móvil), Rust/Go (sistemas/nube), C++/C# (juegos/empresarial).</p>
+                    <p class="mt-2">Elegir lenguajes alineados con IA, Blockchain y Nube (Python, Go, Rust) es estratégico. Un lenguaje versátil permite explorar diferentes áreas antes de especializarse.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="destacados" class="content-section">
+            <h2 class="text-2xl font-semibold mb-4 text-sky-700">Los Principales Contendientes para 2025: Análisis en Profundidad</h2>
+            <div class="space-y-6">
+                 <p class="bg-sky-50 p-4 rounded-lg text-sky-800">Esta sección detalla los lenguajes más establecidos y demandados, explorando sus fortalezas, casos de uso principales y por qué son excelentes opciones para principiantes y desarrolladores experimentados en 2025. Cada uno ofrece un camino robusto hacia diferentes áreas de la tecnología.</p>
+
+                <div class="language-card">
+                    <h3 class="text-xl font-semibold mb-2">Python: El Campeón Universal</h3>
+                    <p class="text-sm text-stone-600 mb-2">Popular y demandado, de propósito general, código abierto, simple y legible.</p>
+                    <p><strong>Casos de Uso Clave:</strong> IA/ML/Ciencia de Datos (TensorFlow, PyTorch), Desarrollo Web (Django, Flask), Automatización, IoT, Ciberseguridad, Finanzas.</p>
+                    <p><strong>Facilidad de Aprendizaje:</strong> Muy Fácil (20/100). Sintaxis simple, extensas bibliotecas.</p>
+                    <p><strong>Comunidad y Recursos:</strong> Vasta y activa, cursos en Mimo, Codecademy, Coursera, YouTube.</p>
+                    <p><strong>Ventaja Clave:</strong> Versatilidad, acceso rápido a IA de vanguardia.</p>
+                </div>
+                <div class="language-card">
+                    <h3 class="text-xl font-semibold mb-2">JavaScript: El Motor Inigualable de la Web</h3>
+                    <p class="text-sm text-stone-600 mb-2">Rey del desarrollo web (frontend y backend con Node.js).</p>
+                    <p><strong>Casos de Uso Clave:</strong> Sitios web interactivos, aplicaciones full-stack (React, Angular, Node.js), móvil (React Native), escritorio (Electron), IoT, serverless.</p>
+                    <p><strong>Facilidad de Aprendizaje:</strong> Fácil (40/100). Amigable para principiantes, resultados en tiempo real en navegador.</p>
+                    <p><strong>Comunidad y Recursos:</strong> Masiva y activa, recursos de Mozilla, Codecademy, Coursera, Udemy, freeCodeCamp.</p>
+                    <p><strong>Ventaja Clave:</strong> Resultados visuales inmediatos, full-stack con un solo lenguaje.</p>
+                </div>
+                <div class="language-card">
+                    <h3 class="text-xl font-semibold mb-2">Java: El Caballo de Batalla Empresarial</h3>
+                    <p class="text-sm text-stone-600 mb-2">Veterano sólido, dominante en grandes empresas por estabilidad y escalabilidad (WORA).</p>
+                    <p><strong>Casos de Uso Clave:</strong> Sistemas empresariales robustos, aplicaciones Android, soluciones en la nube (Spring Boot), Big Data (Hadoop, Spark).</p>
+                    <p><strong>Facilidad de Aprendizaje:</strong> Moderada (70/100). Manejable, especialmente con experiencia en POO.</p>
+                    <p><strong>Comunidad y Recursos:</strong> Vasta y activa, cursos en GeeksforGeeks, Udemy, Coursera.</p>
+                    <p><strong>Ventaja Clave:</strong> Robustez, estructura, estabilidad en grandes proyectos.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="especializados" class="content-section">
+            <h2 class="text-2xl font-semibold mb-4 text-sky-700">Lenguajes Emergentes y Especializados: Alto Impacto, Caminos Específicos</h2>
+            <div class="space-y-6">
+                <p class="bg-sky-50 p-4 rounded-lg text-sky-800">Más allá de los gigantes, existen lenguajes que están ganando una tracción significativa en nichos específicos o que ofrecen ventajas únicas para ciertos tipos de desarrollo. Esta sección explora esas opciones de alto impacto, ideales si tienes un interés particular o buscas habilidades diferenciadoras.</p>
+
+                <div class="language-card">
+                    <h3 class="text-xl font-semibold mb-2">TypeScript: El Primo Supercargado de JavaScript</h3>
+                    <p class="text-sm text-stone-600 mb-2">Añade tipado opcional a JS, código más limpio y manejable.</p>
+                    <p><strong>Casos de Uso:</strong> Aplicaciones web complejas, frameworks frontend (Angular), desarrollo full-stack a gran escala, desarrollo server-side con Node.js.</p>
+                    <p><strong>Demanda y Aprendizaje:</strong> Alta demanda. Curva de aprendizaje suave para usuarios de JS (Moderada, 40/100 si no).</p>
+                    <p><strong>Ventaja Clave:</strong> Mejora la calidad y mantenibilidad del código, preparación para desarrollo profesional.</p>
+                </div>
+                <div class="language-card">
+                    <h3 class="text-xl font-semibold mb-2">Kotlin y Swift: Maestros Móviles</h3>
+                    <p class="text-sm text-stone-600 mb-2">Kotlin (Android, conciso, interoperable con Java). Swift (iOS/macOS, sintaxis limpia, moderno).</p>
+                    <p><strong>Casos de Uso:</strong> Kotlin para apps Android modernas (Netflix, Pinterest). Swift para apps nativas Apple (SoundCloud).</p>
+                    <p><strong>Demanda y Aprendizaje:</strong> Alta demanda en sus ecosistemas. Swift (Moderada, 50/100) es más suave. Kotlin (Moderada, 65/100) ofrece productividad.</p>
+                    <p><strong>Ventaja Clave:</strong> Desarrollo móvil directo, conexión tangible con usuarios finales.</p>
+                </div>
+                <div class="language-card">
+                    <h3 class="text-xl font-semibold mb-2">Go (Golang) y Rust: Potencias de Rendimiento y Sistemas</h3>
+                    <p class="text-sm text-stone-600 mb-2">Go (eficiencia, escalabilidad). Rust (seguridad de memoria, rendimiento).</p>
+                    <p><strong>Casos de Uso:</strong> Go para nube, microservicios, DevOps (Docker, Kubernetes). Rust para programación de sistemas, backend, motores de juegos, blockchain.</p>
+                    <p><strong>Demanda y Aprendizaje:</strong> Demanda alta y creciente. Go (Moderada, 60/100) es relativamente fácil. Rust (Difícil, 80/100) tiene curva pronunciada pero es muy apreciado.</p>
+                    <p><strong>Ventaja Clave:</strong> Go para eficiencia y escalabilidad. Rust para seguridad de memoria y alto rendimiento, roles de alto valor.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="fundamentales" class="content-section">
+            <h2 class="text-2xl font-semibold mb-4 text-sky-700">La Importancia de las Habilidades Fundamentales</h2>
+            <div class="space-y-6">
+                <p class="bg-sky-50 p-4 rounded-lg text-sky-800">Antes de sumergirse de lleno en lenguajes de programación complejos, es crucial dominar ciertas habilidades fundamentales que son la base de gran parte del desarrollo tecnológico. Esta sección destaca dos pilares esenciales: HTML/CSS para la web y SQL para la gestión de datos.</p>
+                <div class="language-card">
+                    <h3 class="text-xl font-semibold mb-2">HTML/CSS: La Base de la Web</h3>
+                    <p class="text-sm text-stone-600 mb-2">Lenguajes de marcado fundamentales para estructura (HTML) y estilo (CSS) de páginas web.</p>
+                    <p><strong>Aplicación:</strong> Indispensables para cualquier tipo de desarrollo web, desde sitios simples hasta aplicaciones complejas.</p>
+                    <p><strong>Facilidad de Aprendizaje:</strong> Muy Fácil (10/100). Proporcionan retroalimentación visual inmediata, lo que los hace ideales para empezar.</p>
+                    <p><strong>Importancia:</strong> Son el primer paso en la codificación para muchos y una habilidad universalmente requerida en la industria web.</p>
+                    <p><strong>Ventaja Clave:</strong> Fundamentales, resultados visuales inmediatos, base para aprender JavaScript y frameworks frontend.</p>
+                </div>
+                <div class="language-card">
+                    <h3 class="text-xl font-semibold mb-2">SQL: El Lenguaje de las Bases de Datos</h3>
+                    <p class="text-sm text-stone-600 mb-2">Esencial para interactuar con bases de datos relacionales.</p>
+                    <p><strong>Aplicación:</strong> Crítico para roles de backend, ciencia de datos, análisis de datos y cualquier aplicación que maneje datos persistentes.</p>
+                    <p><strong>Facilidad de Aprendizaje:</strong> Muy Fácil. Su sintaxis declarativa lo hace relativamente sencillo de aprender para la gestión de datos.</p>
+                    <p><strong>Importancia:</strong> Habilidad transversal, necesaria en casi cualquier sector tecnológico que trabaje con grandes volúmenes de información.</p>
+                    <p><strong>Ventaja Clave:</strong> Comunicación con datos, habilidad universalmente demandada, base para análisis y gestión de información.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="aprendizaje" class="content-section">
+            <h2 class="text-2xl font-semibold mb-4 text-sky-700">Diseñando su Ruta de Aprendizaje: Consejos Estratégicos</h2>
+             <div class="bg-white p-6 rounded-lg shadow space-y-6">
+                <p>Aprender a programar es un viaje. Esta sección ofrece orientación práctica sobre cómo abordar el aprendizaje de manera efectiva, independientemente del lenguaje que elijas. Estos consejos te ayudarán a construir una base sólida y a mantenerte motivado.</p>
+                
+                <div>
+                    <h3 class="text-xl font-semibold mb-2 text-sky-600">A. Proyectos Prácticos y Aplicación Real</h3>
+                    <p>La forma más efectiva de aprender es codificando y construyendo proyectos. Recursos como Codecademy, Mimo y Leetcode enfatizan ejercicios interactivos y proyectos del mundo real. Los proyectos completados son prueba tangible de habilidades para empleadores. Encontrar y corregir errores es crucial para desarrollar habilidades de resolución de problemas.</p>
+                    <p class="mt-2">Este enfoque práctico acelera la adquisición de habilidades y genera confianza.</p>
+                </div>
+
+                <div>
+                    <h3 class="text-xl font-semibold mb-2 text-sky-600">B. Aprovechando la Comunidad y los Recursos en Línea</h3>
+                    <p>Existe una inmensa cantidad de cursos (gratuitos y de pago), tutoriales, documentación y plataformas interactivas para lenguajes populares. Comunidades activas (Stack Overflow, GitHub, Reddit, Discord) brindan apoyo invaluable. Herramientas de IA como ChatGPT, Claude.AI y Perplexity se están convirtiendo en ayudas de aprendizaje interactivas.</p>
+                    <p class="mt-2">Esta abundancia de apoyo reduce la barrera de entrada y permite tomar las riendas del aprendizaje.</p>
+                </div>
+                 <div>
+                    <h3 class="text-xl font-semibold mb-2 text-sky-600">C. Mentalidad de Aprendizaje Continuo</h3>
+                    <p>El panorama tecnológico está en constante evolución. Dominar un solo lenguaje es menos importante que desarrollar una mentalidad de aprendizaje continuo y adaptabilidad. Las habilidades adquiridas al aprender un lenguaje a menudo son transferibles a otros, por lo que la inversión inicial sirve como trampolín.</p>
+                    <p class="mt-2">La elección inicial es importante, pero no definitiva. Fomenta una mentalidad de exploración y crecimiento.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="tabla" class="content-section">
+            <h2 class="text-2xl font-semibold mb-4 text-sky-700">Tabla Comparativa de Lenguajes Recomendados (2025)</h2>
+            <div class="bg-white p-1 sm:p-6 rounded-lg shadow">
+                <p class="mb-4 text-sm sm:text-base">Esta tabla resume las recomendaciones clave para principiantes, destacando la facilidad de aprendizaje, los casos de uso principales, la demanda en el mercado laboral, las perspectivas futuras y la ventaja clave de cada lenguaje. Utilízala como una referencia rápida para comparar opciones.</p>
+                <div class="table-responsive">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lenguaje</th>
+                                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Facilidad (Principiantes)</th>
+                                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Casos de Uso Principales</th>
+                                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Demanda (2025)</th>
+                                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Perspectivas Futuras</th>
+                                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ventaja Clave</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200 text-sm">
+                            <tr>
+                                <td class="font-semibold text-sky-700">Python</td>
+                                <td>Muy Fácil (20/100)</td>
+                                <td>IA/ML, Ciencia de Datos, Web (Backend), Automatización</td>
+                                <td>Muy Alta</td>
+                                <td>Excelente (IA/IoT)</td>
+                                <td>Versatilidad, Acceso a IA</td>
+                            </tr>
+                            <tr>
+                                <td class="font-semibold text-sky-700">JavaScript</td>
+                                <td>Fácil (40/100)</td>
+                                <td>Web (Frontend/Backend), Móvil, IoT, Serverless</td>
+                                <td>Muy Alta</td>
+                                <td>Excelente (Web)</td>
+                                <td>Resultados Visuales, Full-Stack</td>
+                            </tr>
+                            <tr>
+                                <td class="font-semibold text-sky-700">Java</td>
+                                <td>Moderada (70/100)</td>
+                                <td>Empresarial, Android, Cloud, Big Data</td>
+                                <td>Alta</td>
+                                <td>Fuerte (Empresarial)</td>
+                                <td>Robustez, Estructura</td>
+                            </tr>
+                            <tr>
+                                <td class="font-semibold text-sky-700">TypeScript</td>
+                                <td>Moderada (JS users)</td>
+                                <td>Web a Gran Escala, Frameworks (Angular)</td>
+                                <td>Alta</td>
+                                <td>Fuerte (Profesionalización Web)</td>
+                                <td>Calidad/Mantenibilidad Código</td>
+                            </tr>
+                            <tr>
+                                <td class="font-semibold text-sky-700">Kotlin</td>
+                                <td>Moderada (65/100)</td>
+                                <td>Apps Android Modernas, Backend</td>
+                                <td>Alta</td>
+                                <td>Fuerte (Preferido Android)</td>
+                                <td>Concisión, Desarrollo Móvil</td>
+                            </tr>
+                            <tr>
+                                <td class="font-semibold text-sky-700">Swift</td>
+                                <td>Moderada (50/100)</td>
+                                <td>Apps iOS/macOS, Ecosistema Apple</td>
+                                <td>Alta</td>
+                                <td>Fuerte (Esencial Apple)</td>
+                                <td>Sintaxis Limpia, Móvil Nativo</td>
+                            </tr>
+                            <tr>
+                                <td class="font-semibold text-sky-700">Go</td>
+                                <td>Moderada (60/100)</td>
+                                <td>Cloud, Microservicios, Sistemas Distribuidos</td>
+                                <td>Alta</td>
+                                <td>Excelente (Infraestructura Nube)</td>
+                                <td>Eficiencia, Escalabilidad</td>
+                            </tr>
+                            <tr>
+                                <td class="font-semibold text-sky-700">Rust</td>
+                                <td>Difícil (80/100)</td>
+                                <td>Sistemas, Backend, Motores Juegos, Blockchain</td>
+                                <td>Alta y Creciente</td>
+                                <td>Excelente (Seguridad/Rendimiento)</td>
+                                <td>Seguridad Memoria, Alto Rendimiento</td>
+                            </tr>
+                            <tr>
+                                <td class="font-semibold text-sky-700">HTML/CSS</td>
+                                <td>Muy Fácil (10/100)</td>
+                                <td>Estructura y Estilo Web</td>
+                                <td>Muy Alta</td>
+                                <td>Excelente (Base Web)</td>
+                                <td>Fundamentales, Visual Inmediato</td>
+                            </tr>
+                            <tr>
+                                <td class="font-semibold text-sky-700">SQL</td>
+                                <td>Muy Fácil</td>
+                                <td>Gestión Bases de Datos, Análisis Datos</td>
+                                <td>Esencial</td>
+                                <td>Excelente (BBDD Universal)</td>
+                                <td>Comunicación con Datos</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+         <footer class="text-center mt-12 py-6 border-t border-stone-300">
+            <p class="text-sm text-stone-600">&copy; 2025 Explorador de Lenguajes de Programación. Basado en el informe "Guía Estratégica para Principiantes".</p>
+        </footer>
+    </main>
+
+    <script>
+        const navButtons = document.querySelectorAll('.nav-button');
+        const contentSections = document.querySelectorAll('.content-section');
+
+        function setActiveSection(targetId) {
+            navButtons.forEach(button => {
+                if (button.dataset.target === targetId) {
+                    button.classList.add('active');
+                } else {
+                    button.classList.remove('active');
+                }
+            });
+            contentSections.forEach(section => {
+                if (section.id === targetId) {
+                    section.classList.add('active');
+                } else {
+                    section.classList.remove('active');
+                }
+            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        navButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const targetId = button.dataset.target;
+                setActiveSection(targetId);
+            });
+        });
+
+        // Initialize with the 'inicio' section
+        setActiveSection('inicio');
+
+        // Chart.js for Demanda del Mercado
+        const demandaCtx = document.getElementById('demandaMercadoChart');
+        if (demandaCtx) {
+            new Chart(demandaCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Python (45.7%)', 'JavaScript (41.5%)', 'Java (39.5%)'],
+                    datasets: [{
+                        label: 'Demanda en el Mercado Laboral (%)',
+                        data: [45.7, 41.5, 39.5],
+                        backgroundColor: [
+                            'rgba(59, 130, 246, 0.7)', // blue-500
+                            'rgba(245, 158, 11, 0.7)', // amber-500
+                            'rgba(239, 68, 68, 0.7)'  // red-500
+                        ],
+                        borderColor: [
+                            'rgba(59, 130, 246, 1)',
+                            'rgba(245, 158, 11, 1)',
+                            'rgba(239, 68, 68, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.x !== null) {
+                                        label += context.parsed.x + '%';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            max: 50,
+                            title: {
+                                display: true,
+                                text: 'Porcentaje de Reclutadores'
+                            }
+                        },
+                        y: {
+                            ticks: {
+                                autoSkip: false,
+                                callback: function(value, index, values) {
+                                    const label = this.getLabelForValue(value);
+                                    if (label.length > 20) { // Wrap label if too long
+                                        return label.substring(0, 20) + '...';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
